@@ -47,6 +47,7 @@ class DetailListPasienState extends State<DetailListPasien> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
