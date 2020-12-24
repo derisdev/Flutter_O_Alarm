@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:oalarm/service/fetchJadwalObat.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../tambah_jadwal_obat.dart';
 
 class AdminJadwalObat extends StatefulWidget {
+  final int idDataPasien;
+  final String norekammedik;
+  AdminJadwalObat(this.idDataPasien, this.norekammedik);
   @override
   _AdminJadwalObatState createState() => _AdminJadwalObatState();
 }
@@ -18,17 +25,39 @@ class _AdminJadwalObatState extends State<AdminJadwalObat> {
 
   @override
   void initState() {
-    initData();
     super.initState();
+    getJadwalObat();
   }
 
-  void initData(){
-    List<dynamic> row = List();
-    row.add('1');
-    row.add('29-02-2020');
-    row.add('29-02-2020');
-    row.add('Tidak ada keluhan');
-    data.add(row);
+  getJadwalObat () async {
+
+    setState(() {
+      isLoading = true;
+    });
+    FetchJadwalObat fetchData = FetchJadwalObat();
+    fetchData.showJadwalObat(widget.idDataPasien)
+        .then((value) {
+      if (value!=false) {
+
+        List jadwalObat = value;
+
+        for(int index=0; index<jadwalObat.length; index++){
+          List<dynamic> row = List();
+          row.add('${index+1}');
+          row.add(jadwalObat[index]['tanggalambil']);
+          row.add(jadwalObat[index]['tanggalkembali']);
+          row.add(jadwalObat[index]['keluhan']);
+          data.add(row);
+        }
+        setState(() {
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    });
   }
 
   @override
@@ -41,23 +70,25 @@ class _AdminJadwalObatState extends State<AdminJadwalObat> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
-
+          Navigator.push(context, MaterialPageRoute(builder: (context) => TambahJadwalObat(idDataPasien: widget.idDataPasien, isfromTambahPasien: false, norekammedik: widget.norekammedik,)));
         },
         child: Icon(Icons.add),
       ),
-      body: SingleChildScrollView(
+      body:  isLoading
+          ? Container(
+          padding: EdgeInsets.symmetric(vertical: 100),
+          child: Center(child: CircularProgressIndicator()))
+          :  data.isEmpty
+          ? Center(
+        child: Text('Data Kosong'),
+      )
+          : SingleChildScrollView(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
               SizedBox(height: 20,),
-              isLoading
-                  ? Container(
-                  padding: EdgeInsets.symmetric(vertical: 100),
-                  child: Center(child: CircularProgressIndicator()))
-                  : data.isEmpty
-                  ? Spacer()
-                  : Column(
+             Column(
                 children: <Widget>[
                   Table(
                       columnWidths: {

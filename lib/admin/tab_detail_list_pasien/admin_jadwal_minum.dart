@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:oalarm/admin/tambah_jadwal_minum.dart';
+
+import '../detail_admin_jadwal_minum.dart';
 
 
 class AdminJadwalMinum extends StatefulWidget {
+  final int idDataPasien;
+  final String norekamMedik;
+  AdminJadwalMinum(this.idDataPasien, this.norekamMedik);
   @override
   _AdminJadwalMinumState createState() => _AdminJadwalMinumState();
 }
@@ -15,12 +21,18 @@ class _AdminJadwalMinumState extends State<AdminJadwalMinum> {
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: (){
+          Navigator.push(context, MaterialPageRoute(builder: (context) => TambahJadwalMinum()));
+        },
+        child: Icon(Icons.add),
+      ),
       body: ListView.builder(
           itemCount: 9,
           itemBuilder: (context, index){
             return InkWell(
                 onTap: (){
-                  // Navigator.push(context, MaterialPageRoute(builder: (context)=> DetailJadwalMinum()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=> DetailAdminJadwalMinum()));
                 },
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 20),

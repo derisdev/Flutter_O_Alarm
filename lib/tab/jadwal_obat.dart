@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:oalarm/service/fetchdataPasien.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class JadwalObat extends StatefulWidget {
   @override
@@ -9,27 +11,50 @@ class _JadwalObatState extends State<JadwalObat> {
 
   List<List<dynamic>> data = [];
 
-
-  List<String> split = [];
-
   bool isLoading = false;
-
-  List<double> skor = [0, 0, 0, 0, 0];
 
   @override
   void initState() {
-    initData();
+    getPasien();
     super.initState();
   }
 
-  void initData(){
-    List<dynamic> row = List();
-    row.add('1');
-    row.add('29-02-2020');
-    row.add('29-02-2020');
-    row.add('Tidak ada keluhan');
-    data.add(row);
+
+
+  getPasien () async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String noRekamMedik = prefs.getString('norekammedik');
+
+    setState(() {
+      isLoading = true;
+    });
+    FetchDataPasien fetchData = FetchDataPasien();
+    fetchData.showDataPasien(noRekamMedik)
+        .then((value) {
+      if (value!=false) {
+
+        List jadwalObat = value['jadwal_obats'];
+
+        for(int index=0; index<jadwalObat.length; index++){
+          List<dynamic> row = List();
+          row.add('${index+1}');
+          row.add(jadwalObat[index]['tanggalambil']);
+          row.add(jadwalObat[index]['tanggalkembali']);
+          row.add(jadwalObat[index]['keluhan']);
+          data.add(row);
+        }
+        setState(() {
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    });
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +64,9 @@ class _JadwalObatState extends State<JadwalObat> {
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),
-      body: SingleChildScrollView(
+      body: isLoading? Center(
+        child: CircularProgressIndicator(),
+      ) : SingleChildScrollView(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,

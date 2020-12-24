@@ -5,19 +5,41 @@ import 'package:oalarm/admin/tab_detail_list_pasien/admin_jadwal_obat.dart';
 
 
 class DetailListPasien extends StatefulWidget {
+  final String norekammedik;
+  final int idDataPasien;
+  final int index;
+  DetailListPasien(this.norekammedik, this.idDataPasien, {this.index});
   @override
   DetailListPasienState createState() => DetailListPasienState();
 }
 
 class DetailListPasienState extends State<DetailListPasien> {
 
-  final pages = [
-    AdminDataDiriPasien(),
-    AdminJadwalObat(),
-    AdminJadwalMinum(),
-  ];
+  Widget getPage(int index) {
+
+    if (index == 0) {
+      return AdminDataDiriPasien(widget.norekammedik, widget.idDataPasien);
+    }
+    if (index == 1) {
+      return AdminJadwalObat(widget.idDataPasien, widget.norekammedik);
+    }
+    if(index==2){
+      return  AdminJadwalMinum(widget.idDataPasien, widget.norekammedik);
+    }
+    // A fallback, in this case just PageOne
+    return AdminDataDiriPasien(widget.norekammedik, widget.idDataPasien);
+  }
+
 
   int selectedIndex = 0;
+
+  @override
+  void initState() {
+    setState(() {
+      selectedIndex = widget.index!=null? widget.index : 0;
+    });
+    super.initState();
+  }
 
   void onTap(int index) {
     setState(() {
@@ -28,8 +50,6 @@ class DetailListPasienState extends State<DetailListPasien> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-      // membuat objek dari kelas BottomNavigationBar
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem> [
           BottomNavigationBarItem(
@@ -51,8 +71,7 @@ class DetailListPasienState extends State<DetailListPasien> {
         fixedColor: Colors.blue,
         onTap: onTap,
       ),
-      // membuat objek dari kelas TabBarView
-      body: pages.elementAt(selectedIndex),
+      body: getPage(selectedIndex),
     );
   }
 }

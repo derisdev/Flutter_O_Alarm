@@ -29,24 +29,19 @@ class _LogInState extends State<LogIn> {
     passwordController.dispose();
     super.dispose();
   }
-  userLogin () {
+
+
+  adminLogin () {
     setState(() {
       isLoading = true;
     });
     FetchDataUser fetchData = FetchDataUser();
-    fetchData.userLogin(
+    fetchData.adminLogin(
         username.text, passwordController.text)
         .then((value) {
       if (value) {
-       if(widget.isAdmin){
          Navigator.pushReplacement(
-             context, MaterialPageRoute(builder: (context) => HomePage()));
-       }
-       else {
-         Navigator.pushReplacement(
-             context, MaterialPageRoute(builder: (context) => HomePage()));
-       }
-
+             context, MaterialPageRoute(builder: (context) => HomePageAdmin()));
         setState(() {
           isLoading = false;
         });
@@ -58,6 +53,28 @@ class _LogInState extends State<LogIn> {
     });
   }
 
+
+  userLogin () {
+    setState(() {
+      isLoading = true;
+    });
+    FetchDataUser fetchData = FetchDataUser();
+    fetchData.userLogin(
+        username.text, passwordController.text)
+        .then((value) {
+      if (value) {
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => HomePage()));
+        setState(() {
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -122,14 +139,11 @@ class _LogInState extends State<LogIn> {
                                 textAlign: TextAlign.left,
                                 style: TextStyle(color: Colors.black),
                                 controller: username,
-                                keyboardType: TextInputType.number,
+                                keyboardType: TextInputType.name,
                                 cursorColor: Colors.black,
                                 validator: (value){
                                   if (value.isEmpty) {
                                     return 'Username tidak boleh kosong';
-                                  }
-                                  else if(value.length<7){
-                                    return 'Username tidak valid';
                                   }
                                   return null;
                                 },
@@ -203,11 +217,10 @@ class _LogInState extends State<LogIn> {
                               onPressed: isLoading
                                   ? () {}
                                   : () {
-                                // if(_formKey.currentState.validate()){
+                                if(_formKey.currentState.validate()){
                                   FocusScope.of(context).unfocus();
-                                  Navigator.pushReplacement(
-                                      context, MaterialPageRoute(builder: (context) => HomePageAdmin()));
-                                // }
+                                  widget.isAdmin? adminLogin() : userLogin();
+                                }
                               },
                               child: isLoading
                                   ? SpinKitThreeBounce(
