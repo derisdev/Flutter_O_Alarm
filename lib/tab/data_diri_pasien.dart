@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:oalarm/lanjut_sebagai.dart';
 import 'package:oalarm/service/fetchdataPasien.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,6 +21,7 @@ class _DataDiriPasienState extends State<DataDiriPasien> {
   String dosis;
   String pmo;
 
+  FlutterLocalNotificationsPlugin fltrNotification;
 
 
   bool isLoading = true;
@@ -42,6 +44,7 @@ class _DataDiriPasienState extends State<DataDiriPasien> {
     fetchData.showDataPasien(noRekamMedik)
         .then((value) {
       if (value!=false) {
+
         setState(() {
           nama = value['nama'];
           ttl = value['tanggallahir'];
@@ -52,6 +55,8 @@ class _DataDiriPasienState extends State<DataDiriPasien> {
           terapi = value['terapi'];
           dosis = value['dosis'];
           pmo = value['pmo'];
+
+
           isLoading = false;
         });
       } else {
@@ -62,6 +67,7 @@ class _DataDiriPasienState extends State<DataDiriPasien> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -71,8 +77,9 @@ class _DataDiriPasienState extends State<DataDiriPasien> {
         automaticallyImplyLeading: false,
         actions: [
           FlatButton(
-              onPressed: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context) => LanjutSebagai()));
+              onPressed: () async {
+                // await fltrNotification.cancelAll();
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LanjutSebagai()));
               },
               child: Text('Logout', style: TextStyle(color: Colors.white),))
         ],

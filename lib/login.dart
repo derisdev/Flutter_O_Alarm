@@ -1,3 +1,4 @@
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:oalarm/service/fetchdataUser.dart';
 import 'package:oalarm/homepage.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,8 @@ class _LogInState extends State<LogIn> {
   final _formKey = GlobalKey<FormState>();
 
 
+
+
   bool isLoading = false;
   bool _passwordVisible = false;
 
@@ -40,6 +43,7 @@ class _LogInState extends State<LogIn> {
         username.text, passwordController.text)
         .then((value) {
       if (value) {
+        Navigator.pop(context);
          Navigator.pushReplacement(
              context, MaterialPageRoute(builder: (context) => HomePageAdmin()));
         setState(() {
@@ -63,7 +67,8 @@ class _LogInState extends State<LogIn> {
         username.text, passwordController.text)
         .then((value) {
       if (value) {
-          Navigator.pushReplacement(
+        Navigator.pop(context);
+        Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => HomePage()));
         setState(() {
           isLoading = false;
@@ -245,4 +250,7 @@ class _LogInState extends State<LogIn> {
           ),
         ));
   }
+
+
+
 }

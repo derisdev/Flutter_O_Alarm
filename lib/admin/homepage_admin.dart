@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:oalarm/admin/tab_admin/akun_admin.dart';
 import 'package:oalarm/admin/tab_admin/list_pasien.dart';
 import 'package:oalarm/tab/data_diri_pasien.dart';
@@ -12,6 +13,9 @@ class HomePageAdmin extends StatefulWidget {
 }
 
 class HomePageAdminState extends State<HomePageAdmin> {
+
+  DateTime currentBackPressTime;
+
 
   final pages = [
     ListPasien(),
@@ -48,7 +52,22 @@ class HomePageAdminState extends State<HomePageAdmin> {
         onTap: onTap,
       ),
       // membuat objek dari kelas TabBarView
-      body: pages.elementAt(selectedIndex),
+      body: WillPopScope(
+        child: pages.elementAt(selectedIndex),
+        onWillPop: onWillPop,
+      ),
     );
   }
+
+  Future<bool> onWillPop() {
+    DateTime now = DateTime.now();
+    if (currentBackPressTime == null ||
+        now.difference(currentBackPressTime) > Duration(seconds: 2)) {
+      currentBackPressTime = now;
+      Fluttertoast.showToast(msg: 'tekan sekali lagi untuk keluar');
+      return Future.value(false);
+    }
+    return Future.value(true);
+  }
+
 }
