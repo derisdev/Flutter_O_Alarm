@@ -2,22 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:oalarm/admin/detail_list_pasien.dart';
 import 'package:oalarm/admin/tambah_jadwal_minum.dart';
 import 'package:oalarm/service/fetchJadwalObat.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-class TambahJadwalObat extends StatefulWidget {
-  final bool isfromTambahPasien;
-  final Map dataPasien;
+class UpdateJadwalObat extends StatefulWidget {
+  final dynamic listJadwalObat;
   final int idDataPasien;
   final String norekammedik;
-  TambahJadwalObat({this.isfromTambahPasien, this.dataPasien, this.idDataPasien, this.norekammedik});
+  UpdateJadwalObat({this.listJadwalObat, this.idDataPasien, this.norekammedik});
   @override
-  _TambahJadwalObatState createState() => _TambahJadwalObatState();
+  _UpdateJadwalObatObatState createState() => _UpdateJadwalObatObatState();
 }
 
-class _TambahJadwalObatState extends State<TambahJadwalObat> {
+class _UpdateJadwalObatObatState extends State<UpdateJadwalObat> {
+  var now = DateTime.now();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -27,19 +27,35 @@ class _TambahJadwalObatState extends State<TambahJadwalObat> {
   final TextEditingController keluhanController = TextEditingController();
 
   bool isLoading = false;
+  bool isLoadingDelete = false;
 
 
-  addJadwalObat (Map dataJadwalObat) async {
+  @override
+  void initState() {
+    initData();
+    super.initState();
+  }
+
+  initData(){
+    setState(() {
+      tanggalAmbilController.text = widget.listJadwalObat['tanggalambil'];
+      tanggalKembaliController.text = widget.listJadwalObat['tanggalkembali'];
+      keluhanController.text = widget.listJadwalObat['keluhan'];
+    });
+  }
 
 
+
+  updateJadwalObat () async {
 
     setState(() {
       isLoading = true;
     });
     FetchJadwalObat fetchData = FetchJadwalObat();
-    fetchData.storeJadwalObat(dataJadwalObat)
+    fetchData.updateJadwalObat(widget.listJadwalObat['id'], tanggalAmbilController.text, tanggalKembaliController.text, keluhanController.text, widget.idDataPasien.toString())
         .then((value) {
       if (value!=false) {
+        showToast('Berhasil mengupdate data');
         Navigator.pop(context);
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DetailListPasien(widget.norekammedik, widget.idDataPasien, index: 1,)));
         setState(() {
@@ -52,6 +68,43 @@ class _TambahJadwalObatState extends State<TambahJadwalObat> {
       }
     });
   }
+
+  deleteJadwalObat () async {
+
+    setState(() {
+      isLoadingDelete = true;
+    });
+    FetchJadwalObat fetchData = FetchJadwalObat();
+    fetchData.deletejadwalObat(widget.listJadwalObat['id'])
+        .then((value) {
+      if (value!=false) {
+        showToast('Berhasil Menghapus data');
+        Navigator.pop(context);
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DetailListPasien(widget.norekammedik, widget.idDataPasien, index: 1,)));
+        setState(() {
+          isLoadingDelete = false;
+        });
+      } else {
+        setState(() {
+          isLoadingDelete = false;
+        });
+      }
+    });
+  }
+
+
+  showToast(String text) {
+    Fluttertoast.showToast(
+        msg:
+        text,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        fontSize: 14.0,
+        backgroundColor: Colors.grey,
+        textColor: Colors.white);
+  }
+
+
 
 
   @override
@@ -71,20 +124,32 @@ class _TambahJadwalObatState extends State<TambahJadwalObat> {
     final height = size.height;
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
+      appBar: AppBar(
+        title: Text(
+          'Update Jadwal Berobat',
+          style: TextStyle(color: Colors.white, fontSize: 15.0),
+        ),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+        actions: [
+           isLoadingDelete? SpinKitThreeBounce(
+             size: 30,
+             color: Colors.yellow
+           ) : FlatButton(
+            child: Text('Hapus'),
+            onPressed: (){
+              deleteJadwalObat();
+            },
+          )
+        ],
+      ),
       body: Padding(
         padding: EdgeInsets.only(top: height / 15.0, left: 10.0, right: 10.0),
         child: Form(
           key: _formKey,
           child: ListView(
             children: <Widget>[
-              Center(
-                child: Container(
-                  child: Text(
-                    'Tambah Jadwal Berobat',
-                    style: TextStyle(color: Colors.white, fontSize: 20.0),
-                  ),
-                ),
-              ),
+
               Container(
                 height: 50,
                 child: new Flexible(
@@ -215,24 +280,12 @@ class _TambahJadwalObatState extends State<TambahJadwalObat> {
                       size: 30,
                       color: Colors.yellow,
                     ) : Text(
-                      widget.isfromTambahPasien? 'Selanjutnya' : 'Simpan',
+                      'Simpan',
                       textScaleFactor: 1.5,
                     ),
-                    onPressed: () async {
+                    onPressed: (){
                       if (_formKey.currentState.validate()) {
-
-                        SharedPreferences prefs = await SharedPreferences.getInstance();
-
-                        Map dataJadwalObat = {
-                          'tanggalambil': tanggalAmbilController.text,
-                          'tanggalkembali': tanggalKembaliController.text,
-                          'keluhan': keluhanController.text,
-                        };
-
-                        widget.isfromTambahPasien?
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => TambahJadwalMinum(isfromTambahPasien: true, dataPasien: widget.dataPasien, dataJadwalObat: dataJadwalObat)))
-                      :
-                        addJadwalObat(dataJadwalObat);
+                        updateJadwalObat();
                         // widget.mySong == null? _saveData() : _updateData();
                       }
                     }),

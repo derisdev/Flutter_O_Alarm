@@ -3,6 +3,8 @@ import 'package:page_indicator/page_indicator.dart';
 import 'package:oalarm/widget/clock_alarm.dart';
 
 class DetailAdminJadwalMinum extends StatefulWidget {
+  final String jadwalMinum;
+  DetailAdminJadwalMinum(this.jadwalMinum);
   @override
   _DetailAdminJadwalMinumMinumState createState() => _DetailAdminJadwalMinumMinumState();
 }
@@ -12,27 +14,23 @@ class _DetailAdminJadwalMinumMinumState extends State<DetailAdminJadwalMinum> {
   final PageController controller = new PageController();
 
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       body: PageIndicatorContainer(
-        child: PageView(
-          children: <Widget>[
-            PageViewPlayer(
-              time: '21.00',
-            ),
-            PageViewPlayer(
-              time: '12.00',
-            ),
-            PageViewPlayer(
-              time: '07.00',
-            )
-          ],
+        child: PageView.builder(
+          itemCount:  widget.jadwalMinum.split(',').length,
+          itemBuilder: (context, index){
+            return  PageViewPlayer(
+              time: widget.jadwalMinum.split(',')[index],
+            );
+          },
           controller: controller,
         ),
         align: IndicatorAlign.bottom,
-        length: 3,
+        length:  widget.jadwalMinum.split(',').length,
         indicatorSpace: 20.0,
         padding: const EdgeInsets.all(10),
         indicatorColor: Colors.white,

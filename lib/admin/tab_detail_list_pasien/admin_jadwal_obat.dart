@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:oalarm/admin/update_jadwal_obat.dart';
 import 'package:oalarm/service/fetchJadwalObat.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,12 +17,9 @@ class _AdminJadwalObatState extends State<AdminJadwalObat> {
 
   List<List<dynamic>> data = [];
 
-
-  List<String> split = [];
+  List listJadwalObat = [];
 
   bool isLoading = false;
-
-  List<double> skor = [0, 0, 0, 0, 0];
 
   @override
   void initState() {
@@ -38,7 +36,7 @@ class _AdminJadwalObatState extends State<AdminJadwalObat> {
     fetchData.showJadwalObat(widget.idDataPasien)
         .then((value) {
       if (value!=false) {
-
+        listJadwalObat = value;
         List jadwalObat = value;
 
         for(int index=0; index<jadwalObat.length; index++){
@@ -47,6 +45,7 @@ class _AdminJadwalObatState extends State<AdminJadwalObat> {
           row.add(jadwalObat[index]['tanggalambil']);
           row.add(jadwalObat[index]['tanggalkembali']);
           row.add(jadwalObat[index]['keluhan']);
+          row.add('iconEdit ,'+index.toString());
           data.add(row);
         }
         setState(() {
@@ -93,9 +92,10 @@ class _AdminJadwalObatState extends State<AdminJadwalObat> {
                   Table(
                       columnWidths: {
                         0: FixedColumnWidth(40.0),
-                        1: FixedColumnWidth(95.0),
-                        2: FixedColumnWidth(95.0),
-                        3: FixedColumnWidth(100.0),
+                        1: FixedColumnWidth(80.0),
+                        2: FixedColumnWidth(80.0),
+                        3: FixedColumnWidth(80.0),
+                        4: FixedColumnWidth(40.0),
                       },
                       border: TableBorder.all(width: 1.0),
                       children: [
@@ -146,6 +146,18 @@ class _AdminJadwalObatState extends State<AdminJadwalObat> {
                               ),
                             ),
                           ),
+                          Container(
+                            height: 51,
+                            color: Colors.blue,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                '',
+                                style: TextStyle(fontSize: 15.0),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
                         ])
                       ]),
                   Container(
@@ -154,9 +166,10 @@ class _AdminJadwalObatState extends State<AdminJadwalObat> {
                       child: Table(
                         columnWidths: {
                           0: FixedColumnWidth(40.0),
-                          1: FixedColumnWidth(95.0),
-                          2: FixedColumnWidth(95.0),
-                          3: FixedColumnWidth(100.0),
+                          1: FixedColumnWidth(80.0),
+                          2: FixedColumnWidth(80.0),
+                          3: FixedColumnWidth(80.0),
+                          4: FixedColumnWidth(40.0),
                         },
                         border: TableBorder.all(width: 1.0),
                         children: data.map((item) {
@@ -165,7 +178,13 @@ class _AdminJadwalObatState extends State<AdminJadwalObat> {
                                 return Container(
                                   child: Padding(
                                     padding: const EdgeInsets.all(8.0),
-                                    child: Text(
+                                    child: row.toString().contains('iconEdit')?
+                                        IconButton(
+                                            icon: Icon(Icons.edit, size: 15,),
+                                            onPressed: (){
+                                              Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateJadwalObat(listJadwalObat: listJadwalObat[int.parse(row.toString().split(',').last)], idDataPasien: widget.idDataPasien, norekammedik: widget.norekammedik,)));
+                                            })
+                                        : Text(
                                       row.toString(),
                                       style: TextStyle(fontSize: 15.0),
                                       textAlign: TextAlign.center,

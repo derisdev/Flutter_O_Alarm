@@ -7,19 +7,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 class FetchJadwalObat {
 
 
-  Future storeJadwalObat(String tanggalAmbil, String tanggalKembali, String keluhan, String data_pasien_id) async {
+  Future storeJadwalObat(Map dataJadwalObat) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String baseUrl =
         "http://oalarm.fillocoffee.web.id/api/v1/jadwalobat";
     var response = await http.post(baseUrl,
         headers: {"Accept": "application/json"},
-        body: {
-          'tanggalambil': tanggalAmbil,
-          'tanggalkembali': tanggalKembali,
-          'keluhan': keluhan,
-          'data_pasien_id': data_pasien_id,
-    });
+        body: dataJadwalObat);
 
     print(response.statusCode);
     print(response.body);
@@ -58,7 +53,7 @@ class FetchJadwalObat {
     print(response.statusCode);
     print(response.body);
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
       return true;
     }
 
@@ -127,7 +122,7 @@ class FetchJadwalObat {
   }
 
 
-  Future deletejadwalMinum(String idJadwalObat) async {
+  Future deletejadwalObat(int idJadwalObat) async {
 
     String baseUrl =
         "http://oalarm.fillocoffee.web.id/api/v1/jadwalobat/$idJadwalObat";

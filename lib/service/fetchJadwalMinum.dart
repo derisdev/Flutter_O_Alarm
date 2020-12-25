@@ -58,7 +58,7 @@ class FetchJadwalMinum {
     print(response.statusCode);
     print(response.body);
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
       return true;
     }
 
@@ -127,7 +127,7 @@ class FetchJadwalMinum {
   }
 
 
-  Future deletejadwalMinum(String idJadwalMinum) async {
+  Future deletejadwalMinum(int idJadwalMinum) async {
 
     String baseUrl =
         "http://oalarm.fillocoffee.web.id/api/v1/jadwalminum/$idJadwalMinum";

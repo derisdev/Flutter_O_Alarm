@@ -7,26 +7,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 class FetchDataPasien {
 
 
-  Future storeDataPasien(String norekammedik, String nama, String tanggallahir, String umur, String alamat, String kodediagnosa, String kodedx, String terapi, String dosis, String pmo) async {
+  Future storeDataPasien(Map dataPasien) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String baseUrl =
         "http://oalarm.fillocoffee.web.id/api/v1/datapasien";
     var response = await http.post(baseUrl,
         headers: {"Accept": "application/json"},
-        body: {
-          'norekammedik': norekammedik,
-          'nama': nama,
-          'tanggallahir': tanggallahir,
-          'alamat': alamat,
-          'umur': umur,
-          'kodediagnosa': kodediagnosa,
-          'kodedx': kodedx,
-          'terapi': terapi,
-          'dosis': dosis,
-          'pmo': pmo
-
-    });
+        body: dataPasien);
 
     print(response.statusCode);
     print(response.body);
@@ -39,7 +27,7 @@ class FetchDataPasien {
       prefs.setInt('datapasienid', datapasienid);
       prefs.setString('norekammedik', norekammedik);
 
-      return true;
+      return jsonData['datapasien'];
     }
 
     else if (response.statusCode == 404) {

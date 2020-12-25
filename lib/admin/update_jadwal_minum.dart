@@ -1,26 +1,23 @@
 import 'package:day_night_time_picker/day_night_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:oalarm/admin/detail_list_pasien.dart';
-import 'package:oalarm/admin/homepage_admin.dart';
 import 'package:oalarm/service/fetchJadwalMinum.dart';
-import 'package:oalarm/service/fetchJadwalObat.dart';
-import 'package:oalarm/service/fetchdataPasien.dart';
 
-class TambahJadwalMinum extends StatefulWidget {
-  final bool isfromTambahPasien;
-  final Map dataPasien;
-  final Map dataJadwalObat;
+class UpdateJadwalMinum extends StatefulWidget {
+  final dynamic dataJadwalMinum;
   final int idDataPasien;
   final String noRekamMedik;
-  TambahJadwalMinum({this.isfromTambahPasien, this.dataPasien, this.dataJadwalObat, this.idDataPasien, this.noRekamMedik});
+  UpdateJadwalMinum({this.dataJadwalMinum, this.idDataPasien, this.noRekamMedik});
 
   @override
-  _TambahJadwalMinumState createState() => _TambahJadwalMinumState();
+  _UpdateJadwalMinumState createState() => _UpdateJadwalMinumState();
 }
 
-class _TambahJadwalMinumState extends State<TambahJadwalMinum> {
+class _UpdateJadwalMinumState extends State<UpdateJadwalMinum> {
 
   List<TimeOfDay> _times = [];
 
@@ -36,14 +33,35 @@ class _TambahJadwalMinumState extends State<TambahJadwalMinum> {
 
   @override
   void initState() {
+    initData();
     super.initState();
-    _times.add(TimeOfDay.now().replacing(minute: 30));
+  }
 
+  initData(){
+
+    String time = widget.dataJadwalMinum['jadwalminum'];
+    List<String> listTime = time.split(',');
+
+    print(listTime);
+
+
+    setState(() {
+      dosisController.text = widget.dataJadwalMinum['dosis'];
+      terapiController.text = widget.dataJadwalMinum['terapi'];
+
+      for(int i=0; i<listTime.length;i++){
+        TimeOfDay timeOfDay = TimeOfDay(hour: int.parse(listTime[i].split(':').first), minute: int.parse(listTime[i].split(':').last));
+        _times.add(timeOfDay);
+      }
+
+    });
   }
 
 
 
-  addJadwalMinum () async {
+
+
+  updateJadwalMinum () async {
 
     String jamMinum = '';
     for(int index=0; index<_times.length; index++){
@@ -57,7 +75,7 @@ class _TambahJadwalMinumState extends State<TambahJadwalMinum> {
       isLoading = true;
     });
     FetchJadwalMinum fetchData = FetchJadwalMinum();
-    fetchData.storeJadwalMinum(terapiController.text, dosisController.text, jamMinum, widget.idDataPasien.toString())
+    fetchData.updateJadwalMinum(widget.dataJadwalMinum['id'], terapiController.text, dosisController.text, jamMinum, widget.idDataPasien.toString())
         .then((value) {
       if (value!=false) {
         Navigator.pop(context);
@@ -71,64 +89,6 @@ class _TambahJadwalMinumState extends State<TambahJadwalMinum> {
         });
       }
     });
-  }
-
-
-  addPasien () async {
-
-    setState(() {
-      isLoading = true;
-    });
-
-    FetchDataPasien fetchDataPasien = FetchDataPasien();
-    fetchDataPasien.storeDataPasien(widget.dataPasien).then((value){
-      if(value!=false){
-        int newIdDataPasien = value['id'];
-        Map newDataJadwalObat = widget.dataJadwalObat;
-      newDataJadwalObat['data_pasien_id'] = newIdDataPasien.toString();
-      FetchJadwalObat fetchJadwalObat = FetchJadwalObat();
-        fetchJadwalObat.storeJadwalObat(widget.dataJadwalObat).then((value){
-          if(value!=false){
-            String jamMinum = '';
-            for(int index=0; index<_times.length; index++){
-              if(index!=0){
-                jamMinum+=',';
-              }
-              jamMinum+='${_times[index].format(context)}';
-            }
-            FetchJadwalMinum fetchData = FetchJadwalMinum();
-            fetchData.storeJadwalMinum(terapiController.text, dosisController.text, jamMinum, newIdDataPasien.toString())
-                .then((value) {
-              if (value!=false) {
-                Navigator.pop(context);
-                Navigator.pop(context);
-                Navigator.pop(context);
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePageAdmin()));
-                setState(() {
-                  isLoading = false;
-                });
-              } else {
-                setState(() {
-                  isLoading = false;
-                });
-              }
-            });
-          }
-          else {
-            setState(() {
-              isLoading = false;
-            });
-          }
-        });
-      }
-      else {
-        setState(() {
-          isLoading = false;
-        });
-      }
-    });
-
-
   }
 
   @override
@@ -171,9 +131,7 @@ class _TambahJadwalMinumState extends State<TambahJadwalMinum> {
             ),
             onPressed: (){
               if (_formKey.currentState.validate()) {
-                widget.isfromTambahPasien?
-                    addPasien():
-                addJadwalMinum();
+                updateJadwalMinum();
               }
             }),
       ),
@@ -276,9 +234,9 @@ class _TambahJadwalMinumState extends State<TambahJadwalMinum> {
               ),
               RaisedButton(
                 onPressed: (){
-                 setState(() {
-                   _times.add(TimeOfDay.now().replacing(minute: 30));
-                 });
+                  setState(() {
+                    _times.add(TimeOfDay.now().replacing(minute: 30));
+                  });
                 },
                 child: Text('Tambah Jam Minum'),
               )
