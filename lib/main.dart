@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:oalarm/splash_screen.dart';
 import 'package:oalarm/welcome_screen.dart';
 
 void main() {
@@ -6,8 +8,12 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+
+
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent));
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'O! Alarm',
@@ -15,7 +21,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: WelcomeScreen(),
+      home: SplashScreen(),
     );
   }
 }

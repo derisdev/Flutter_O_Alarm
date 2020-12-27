@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:oalarm/admin/detail_list_pasien.dart';
 import 'package:oalarm/admin/tambah_jadwal_minum.dart';
 import 'package:oalarm/admin/update_jadwal_minum.dart';
@@ -60,11 +61,12 @@ class _AdminJadwalMinumState extends State<AdminJadwalMinum> {
     fetchData.deletejadwalMinum(idJadwalMinum)
         .then((value) {
       if (value!=false) {
-        Navigator.pop(context);
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DetailListPasien(widget.norekamMedik, widget.idDataPasien, index: 2,)));
         setState(() {
           isLoading = false;
         });
+        showToast('Berhasil Menghapus data');
+
       } else {
         setState(() {
           isLoading = false;
@@ -73,48 +75,113 @@ class _AdminJadwalMinumState extends State<AdminJadwalMinum> {
     });
   }
 
+  showToast(String text) {
+    Fluttertoast.showToast(
+        msg:
+        text,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        fontSize: 14.0,
+        backgroundColor: Colors.grey,
+        textColor: Colors.white);
+  }
+
+
+
 
   @override
   Widget build(BuildContext context) {
+    final double statusbarHeight = MediaQuery.of(context).padding.top;
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Jadwal Minum Obat'),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-      ),
+      backgroundColor: Color(0xff3e3a63),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
           Navigator.push(context, MaterialPageRoute(builder: (context) => TambahJadwalMinum(isfromTambahPasien: false, idDataPasien: widget.idDataPasien, noRekamMedik: widget.norekamMedik,)));
         },
-        child: Icon(Icons.add),
+        child: Container(
+        width: 60,
+        height: 60,
+        child: Icon(
+          Icons.add,
+        ),
+        decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+                colors: [Color(0xff3587fc), Color(0xff10c8ff)],
+                begin: const FractionalOffset(0.0, 0.0),
+                end: const FractionalOffset(0.5, 0.0),
+                stops: [0.0, 1.0],
+                tileMode: TileMode.clamp)),
       ),
-      body: isLoading? Center(
-        child: CircularProgressIndicator(),
-      ) : ListView.builder(
-          itemCount: listJadwalMinum.length,
-          itemBuilder: (context, index){
-            return InkWell(
-                onTap: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=> DetailAdminJadwalMinum(listJadwalMinum[index]['jadwalminum'])));
-                },
-                onLongPress: (){
-                  confirm(context, listJadwalMinum[index]);
-                },
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 20),
-                  child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: ListTile(
-                        title: Text(listJadwalMinum[index]['terapi']),
-                        subtitle: Text(listJadwalMinum[index]['dosis']),
-                        trailing: Icon(Icons.chevron_right),
+      ),
+      body: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.only(top: statusbarHeight),
+            height: statusbarHeight + 50,
+            child: Center(
+              child: Text(
+                'Jadwal Minum Obat',
+                style: TextStyle(color: Colors.white, fontSize: 17),
+              ),
+            ),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  colors: [Color(0xff3587fc), Color(0xff10c8ff)],
+                  begin: const FractionalOffset(0.0, 0.0),
+                  end: const FractionalOffset(0.5, 0.0),
+                  stops: [0.0, 1.0],
+                  tileMode: TileMode.clamp),
+            ),
+          ),
+          Container(
+            height:
+          MediaQuery.of(context).size.height - 106 - statusbarHeight,
+            child: isLoading? Center(
+              child: CircularProgressIndicator(),
+            ) : listJadwalMinum.isEmpty? Center(
+              child: Text('Data Kosong', style: TextStyle(color: Colors.white),),
+            ) : ListView.builder(
+                itemCount: listJadwalMinum.length,
+                itemBuilder: (context, index){
+                  return InkWell(
+                      onTap: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=> DetailAdminJadwalMinum(listJadwalMinum[index])));
+                      },
+                      onLongPress: (){
+                        confirm(context, listJadwalMinum[index]);
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: Card(
+                            color: Color(0xff434372),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: ListTile(
+                              leading: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  minWidth: 30,
+                                  minHeight: 30,
+                                  maxWidth: 30,
+                                  maxHeight: 30,
+                                ),
+                                child:Image.asset('assets/images/capsules.png', fit: BoxFit.contain,),
+                              ),
+                              title: Text(listJadwalMinum[index]['terapi'], style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w700),),
+                              subtitle: Text(listJadwalMinum[index]['dosis'],  style: TextStyle(
+                                  color: Color(0xffadaad6)),),
+                              trailing: Icon(Icons.chevron_right, color: Color(0xffadaad6)),
+                            )
+                        ),
                       )
-                  ),
-                )
-            );
-          }),
+                  );
+                }),
+          ),
+        ],
+      )
     );
   }
 
@@ -132,7 +199,7 @@ class _AdminJadwalMinumState extends State<AdminJadwalMinum> {
                   child: ListTile(
                     leading: Icon(
                       Icons.edit,
-                      color: Colors.blue,
+                      color: Colors.lightBlueAccent,
                     ),
                     title:
                     Text('UBAH', textAlign: TextAlign.center),
@@ -147,7 +214,7 @@ class _AdminJadwalMinumState extends State<AdminJadwalMinum> {
                   child: ListTile(
                     leading: Icon(
                       Icons.delete,
-                      color: Colors.blue,
+                      color: Colors.lightBlueAccent,
                     ),
                     title:
                     Text('HAPUS', textAlign: TextAlign.center),

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:oalarm/homepage.dart';
@@ -151,36 +153,88 @@ class _JadwalMinumState extends State<JadwalMinum> {
 
   @override
   Widget build(BuildContext context) {
+    final double statusbarHeight = MediaQuery
+        .of(context)
+        .padding
+        .top;
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Jadwal Minum Obat'),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
+      backgroundColor: Color(0xff3e3a63),
+      body: Column(
+        children: [
+      Container(
+        padding: EdgeInsets.only(top: statusbarHeight),
+        height: statusbarHeight + 50,
+      child: Center(
+        child:Text('Jadwal Minum Obat', style: TextStyle(color: Colors.white, fontSize: 17),),
+        ),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+            colors: [Color(0xff3587fc), Color(0xff10c8ff)],
+            begin: const FractionalOffset(0.0, 0.0),
+            end: const FractionalOffset(0.5, 0.0),
+            stops: [0.0, 1.0],
+            tileMode: TileMode.clamp
+        ),
       ),
-      body: isLoading? Center(
-        child: CircularProgressIndicator(),
-      ) : ListView.builder(
-          itemCount: listJadwalMinum.length,
-          itemBuilder: (context, index){
-            return InkWell(
-              onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=> DetailJadwalMinum(listJadwalMinum[index]['jadwalminum'])));
-              },
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: ListTile(
-                      title: Text(listJadwalMinum[index]['terapi']),
-                      subtitle: Text(listJadwalMinum[index]['dosis']),
-                      trailing: Icon(Icons.chevron_right),
-                    )
+    ),
+          Container(
+            height: MediaQuery.of(context).size.height-106-statusbarHeight,
+            child: isLoading? Container(
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ) : listJadwalMinum.isEmpty?
+            Center(
+              child: Text('Data Kosong', style: TextStyle(color: Colors.white, fontSize: 17)),
+            )
+                : MediaQuery.removePadding(
+              removeTop: true,
+                  context: context,
+                  child: ListView.builder(
+                  itemCount: listJadwalMinum.length,
+                  itemBuilder: (context, index){
+                    return Padding(
+                      padding:  EdgeInsets.only(top: index==0? 8 : 0),
+                      child: InkWell(
+                          onTap: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=> DetailJadwalMinum(listJadwalMinum[index])));
+                          },
+                          child: Container(
+                            padding: EdgeInsets.symmetric(horizontal: 10),
+                            margin: EdgeInsets.symmetric(vertical: 10),
+                            height: 80,
+                            child: Card(
+                                elevation: 0,
+                                color: Color(0xff434372),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                child: ListTile(
+                                  leading: ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      minWidth: 30,
+                                      minHeight: 30,
+                                      maxWidth: 30,
+                                      maxHeight: 30,
+                                    ),
+                                    child:Image.asset('assets/images/capsules.png', fit: BoxFit.contain,),
+                                  ),
+                                  title: Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                                    child: Text(listJadwalMinum[index]['terapi'], style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700),),
+                                  ),
+                                  subtitle: Text(listJadwalMinum[index]['dosis'],  style: TextStyle(color: Color(0xffadaad6)),),
+                                  trailing: Icon(Icons.chevron_right, color: Color(0xffadaad6)),
+                                )
+                            ),
+                          )
+                      ),
+                    );
+                  }),
                 ),
-              )
-            );
-          }),
+          ),
+        ],
+      )
     );
   }
 }

@@ -64,7 +64,7 @@ class FetchDataUser {
 
       prefs.setInt('admin_id', userId);
       prefs.setString('admin_username', username);
-      prefs.setBool('is_login', true);
+      prefs.setBool('is_admin', true);
 
 
       return true;
@@ -101,7 +101,8 @@ class FetchDataUser {
 
       prefs.setString('username', username);
       prefs.setString('norekammedik', nama);
-      prefs.setBool('is_login', true);
+      prefs.setBool('is_pasien', true);
+
 
 
       return true;

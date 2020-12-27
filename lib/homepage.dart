@@ -40,21 +40,21 @@ class HomePageState extends State<HomePage> {
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem> [
           BottomNavigationBarItem(
-              icon: Icon(Icons.timelapse_rounded),
-              title: Text('Alarm')
+              icon: Icon(Icons.timelapse_rounded, size: 20,),
+              title: Text('Alarm', style: TextStyle(fontSize: 13))
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.date_range_rounded),
-              title: Text('Jadwal Obat')
+              icon: Icon(Icons.date_range_rounded,size: 20,),
+              title: Text('Jadwal Obat', style: TextStyle(fontSize: 13))
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.account_box_rounded),
-              title: Text('Data Pasien')
+              icon: Icon(Icons.account_box_rounded,size: 20,),
+              title: Text('Data Pasien', style: TextStyle(fontSize: 13))
           ),
         ],
         currentIndex: selectedIndex,
         type: BottomNavigationBarType.fixed,
-        fixedColor: Colors.blue,
+        fixedColor: Color(0xff10c8ff),
         onTap: onTap,
       ),
       // membuat objek dari kelas TabBarView

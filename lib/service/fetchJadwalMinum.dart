@@ -8,7 +8,6 @@ class FetchJadwalMinum {
 
 
   Future storeJadwalMinum(String terapi, String dosis, String jadwalminum, String data_pasien_id) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String baseUrl =
         "http://oalarm.fillocoffee.web.id/api/v1/jadwalminum";

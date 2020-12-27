@@ -4,34 +4,57 @@ import 'package:oalarm/homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:oalarm/components/arrow_button.dart';
+import 'package:oalarm/components/day/sun.dart';
+import 'package:oalarm/components/day/sun_rays.dart';
+import 'package:oalarm/components/input_field.dart';
+import 'package:oalarm/components/night/moon.dart';
+import 'package:oalarm/components/night/moon_rays.dart';
+import 'package:oalarm/components/toggle_button.dart';
+import 'package:oalarm/enums/mode.dart';
+import 'package:oalarm/models/login_theme.dart';
+import 'package:oalarm/utils/cached_images.dart';
+import 'package:oalarm/utils/viewport_size.dart';
 
-import 'admin/homepage_admin.dart';
+import 'admin/tab_admin/list_pasien.dart';
 
 class LogIn extends StatefulWidget {
-  final bool isAdmin;
-  LogIn({this.isAdmin});
   @override
   _LogInState createState() => _LogInState();
 }
 
-class _LogInState extends State<LogIn> {
-  TextEditingController username = TextEditingController();
+class _LogInState extends State<LogIn> with SingleTickerProviderStateMixin {
+  TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
-
+  final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
 
 
   bool isLoading = false;
   bool _passwordVisible = false;
 
+  AnimationController _animationController;
+  LoginTheme day;
+  LoginTheme night;
+  Mode _activeMode = Mode.day;
+
   @override
-  void dispose() {
-    username.dispose();
-    passwordController.dispose();
-    super.dispose();
+  void initState() {
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(
+        milliseconds: 1000,
+      ),
+    );
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _animationController.forward(from: 0.0);
+    }); // wait for all the widget to render
+    initializeTheme(); //initializing theme for day and night
+    super.initState();
   }
+
 
 
   adminLogin () {
@@ -40,12 +63,11 @@ class _LogInState extends State<LogIn> {
     });
     FetchDataUser fetchData = FetchDataUser();
     fetchData.adminLogin(
-        username.text, passwordController.text)
+        usernameController.text, passwordController.text)
         .then((value) {
       if (value) {
-        Navigator.pop(context);
          Navigator.pushReplacement(
-             context, MaterialPageRoute(builder: (context) => HomePageAdmin()));
+             context, MaterialPageRoute(builder: (context) => ListPasien()));
         setState(() {
           isLoading = false;
         });
@@ -64,10 +86,9 @@ class _LogInState extends State<LogIn> {
     });
     FetchDataUser fetchData = FetchDataUser();
     fetchData.userLogin(
-        username.text, passwordController.text)
+        usernameController.text, passwordController.text)
         .then((value) {
       if (value) {
-        Navigator.pop(context);
         Navigator.pushReplacement(
               context, MaterialPageRoute(builder: (context) => HomePage()));
         setState(() {
@@ -81,176 +102,264 @@ class _LogInState extends State<LogIn> {
     });
   }
 
+
+
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: Container(
-          child: Stack(
-            children: [
-              Container(
-                height: MediaQuery.of(context).size.height * 0.75,
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    gradient: LinearGradient(
-                        begin: FractionalOffset.topCenter,
-                        end: FractionalOffset.bottomCenter,
-                        colors: [
-                          Colors.white,
-                          Colors.grey.withOpacity(0.0),
-                        ],
-                        stops: [
-                          0.0,
-                          1.0
-                        ])),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Container(height: 30, color: Colors.transparent),
-                          Container(
-                            height: 60,
-                            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                            color: Colors.transparent,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: <Widget>[
-                                Text('LOGIN',
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      color: Color(0xff8b2f08),
-                                    )),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 70,
-                          ),
-                          Text(
-                            'Welcome Back!',
-                            style: TextStyle(color: Color(0xff8b2f08), fontSize: 30),
-                          ),
-                          SizedBox(
-                            height: 30,
-                          ),
-                          Container(
-                            height: 50,
-                            child: new Flexible(
-                              child: TextFormField(
-                                textAlign: TextAlign.left,
-                                style: TextStyle(color: Colors.black),
-                                controller: username,
-                                keyboardType: TextInputType.name,
-                                cursorColor: Colors.black,
-                                validator: (value){
-                                  if (value.isEmpty) {
-                                    return 'Username tidak boleh kosong';
-                                  }
-                                  return null;
-                                },
-
-                                decoration: InputDecoration(
-                                    errorStyle: TextStyle(fontSize: 7),
-                                    contentPadding: EdgeInsets.all(5),
-                                    labelText: 'Username',
-                                    labelStyle: TextStyle(fontSize: 13),
-                                    focusedBorder: UnderlineInputBorder(
-                                        borderSide:
-                                        BorderSide(color: Color(0xff8b2f08)))),
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Container(
-                            height: 50,
-                            child: new Flexible(
-                              child: TextFormField(
-                                textAlign: TextAlign.left,
-                                style: TextStyle(color: Colors.black),
-                                controller: passwordController,
-                                keyboardType: TextInputType.visiblePassword,
-                                obscureText: !_passwordVisible,
-                                cursorColor: Colors.black,
-                                validator: (val) => val.length < 6 ? 'Password terlalu pendek.' :  val.isEmpty? 'Password tidak boleh kosong' : null,
-                                decoration: InputDecoration(
-                                  errorStyle: TextStyle(fontSize: 7),
-                                  suffixIcon: IconButton(
-                                    icon: Icon(
-                                      // Based on passwordVisible state choose the icon
-                                      _passwordVisible
-                                          ? Icons.visibility
-                                          : Icons.visibility_off,
-                                      color: Colors.black,
-                                    ),
-                                    onPressed: () {
-                                      setState(() {
-                                        _passwordVisible = !_passwordVisible;
-                                      });
-                                    },
-                                  ),
-                                  contentPadding: EdgeInsets.all(5),
-                                  labelText: 'Password',
-                                  labelStyle: TextStyle(fontSize: 13),
-                                  focusedBorder: UnderlineInputBorder(
-                                      borderSide:
-                                      BorderSide(color: Color(0xff8b2f08))),
-
-                                ),
-
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 40,
-                          ),
-                          Container(
-                            width: double.infinity,
-                            height: 60,
-                            child: RaisedButton(
-                              elevation: 7,
-                              color: Color(0xff8b2f08),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30),
-                                  side:
-                                  BorderSide(color: Color(0xffACADA9), width: 0.1)),
-                              onPressed: isLoading
-                                  ? () {}
-                                  : () {
-                                if(_formKey.currentState.validate()){
-                                  FocusScope.of(context).unfocus();
-                                  widget.isAdmin? adminLogin() : userLogin();
-                                }
-                              },
-                              child: isLoading
-                                  ? SpinKitThreeBounce(
-                                color: Colors.white,
-                                size: 30.0,
-                              )
-                                  : Text('Masuk',
-                                  style: TextStyle(
-                                    fontSize: 17,
-                                    color: Colors.white,
-                                  )),
-                            ),
-                          ),
-
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ));
+  void didChangeDependencies() {
+    cacheImages();
+    super.didChangeDependencies();
   }
 
+  cacheImages() {
+    CachedImages.imageAssets.forEach((asset) {
+      precacheImage(asset, context);
+    });
+  }
+
+  initializeTheme() {
+    var hour = DateTime.now().hour;
+    String greeting;
+    if (hour < 12) {
+      setState(() {
+        greeting = 'Selamat Pagi';
+      });
+    }
+    if (hour >= 12 && hour < 18) {
+      setState(() {
+        greeting = 'Selamat Sore';
+      });
+    }
+    else if(hour>=18){
+      setState(() {
+        greeting = 'Selamat Malam';
+      });
+    }
+    day = LoginTheme(
+      title: greeting,
+      backgroundGradient: [
+        const Color(0xFF8C2480),
+        const Color(0xFFCE587D),
+        const Color(0xFFFF9485),
+        const Color(0xFFFF9D80),
+        // const Color(0xFFFFBD73),
+      ],
+      landscape: CachedImages.imageAssets[0],
+      circle: Sun(
+        controller: _animationController,
+      ),
+      rays: SunRays(
+        controller: _animationController,
+      ),
+    );
+
+    night = LoginTheme(
+
+      title: greeting,
+      backgroundGradient: [
+        const Color(0xFF0D1441),
+        const Color(0xFF283584),
+        const Color(0xFF6384B2),
+        const Color(0xFF6486B7),
+      ],
+      landscape: CachedImages.imageAssets[1],
+      circle: Moon(
+        controller: _animationController,
+      ),
+      rays: MoonRays(
+        controller: _animationController,
+      ),
+    );
+  }
+
+
+  @override
+  void dispose() {
+    usernameController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    ViewportSize.getSize(context);
+    return Scaffold(
+      key: _scaffoldKey,
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: _activeMode == Mode.day
+                ? day.backgroundGradient
+                : night.backgroundGradient,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Positioned(
+              width: height * 0.8,
+              height: height * 0.8,
+              bottom: _activeMode == Mode.day ? -300 : -50,
+              child: _activeMode == Mode.day ? day.rays : night.rays,
+            ),
+            Positioned(
+              bottom: _activeMode == Mode.day ? -160 : -80,
+              child: _activeMode == Mode.day ? day.circle : night.circle,
+            ),
+            Positioned.fill(
+              child: Image(
+                image:
+                _activeMode == Mode.day ? day.landscape : night.landscape,
+                fit: BoxFit.fill,
+              ),
+            ),
+            Positioned(
+              top: height * 0.1,
+              left: width * 0.07,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ToggleButton(
+                    startText: 'Pasien Login',
+                    endText: 'Admin Login',
+                    tapCallback: (index) {
+                      setState(() {
+                        _activeMode = index == 0 ? Mode.day : Mode.night;
+                        _animationController.forward(from: 0.0);
+                      });
+                    },
+                  ),
+                  buildText(
+                    text: _activeMode == Mode.day ? day.title : night.title,
+                    padding: EdgeInsets.only(top: height * 0.04),
+                    fontSize: width * 0.09,
+                    fontFamily: 'YesevaOne',
+                  ),
+                  buildText(
+                    fontSize: width * 0.04,
+                    padding: EdgeInsets.only(
+                      top: height * 0.02,
+                    ),
+                    text: 'Masukkan informasi kamu dibawah',
+                  ),
+                  buildText(
+                    text: 'Username',
+                    padding: EdgeInsets.only(
+                        top: height * 0.04, bottom: height * 0.015),
+                    fontSize: width * 0.04,
+                  ),
+                  inputField(
+                    hintText: 'Masukkan username',
+                    controller: usernameController
+                  ),
+                  buildText(
+                    text: 'Password',
+                    padding: EdgeInsets.only(
+                      top: height * 0.03,
+                      bottom: height * 0.015,
+                    ),
+                    fontSize: width * 0.04,
+                  ),
+                  inputField(
+                    hintText: 'Password kamu',
+                    controller: passwordController
+                  ),
+                  isLoading?
+                  Container(
+                    width: ViewportSize.width - ViewportSize.width * 0.15,
+                    margin: EdgeInsets.only(
+                      top: ViewportSize.height * 0.02,
+                    ),
+                    alignment: Alignment.centerRight,
+                    child: Container(
+                      width: ViewportSize.width * 0.155,
+                      height: ViewportSize.width * 0.155,
+                      decoration: ShapeDecoration(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        color: const Color(0xFFFFFFFF),
+                        shadows: [
+                          BoxShadow(
+                            color: const Color(0x55000000),
+                            blurRadius: ViewportSize.width * 0.02,
+                            offset: Offset(3, 3),
+                          ),
+                        ],
+                      ),
+                      child: SpinKitThreeBounce(
+                        size: 20,
+                        color: Colors.black,
+                      ),
+                    ),
+                  )
+                      :
+
+                  InkWell(
+                      onTap: (){
+                       if(usernameController.text.isNotEmpty && passwordController.text.isNotEmpty){
+                         _activeMode == Mode.day? userLogin() : adminLogin();
+                       }
+                       else {
+                         _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text('Harap Lengkapi Data')));
+                       }
+                      },
+                      child: const ArrowButton()),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Padding buildText(
+      {double fontSize, EdgeInsets padding, String text, String fontFamily}) {
+    return Padding(
+      padding: padding,
+      child: Text(
+        text,
+        style: TextStyle(
+          color: const Color(0xFFFFFFFF),
+          fontSize: fontSize,
+          fontFamily: fontFamily ?? '',
+        ),
+      ),
+    );
+  }
+
+  Widget inputField({String hintText, TextEditingController controller}){
+    return Container(
+      width: ViewportSize.width * 0.85,
+      alignment: Alignment.center,
+      child: Theme(
+        data: ThemeData(
+          primaryColor: const Color(0x55000000),
+        ),
+        child: TextField(
+          controller: controller,
+          style: TextStyle(color: Colors.white),
+          keyboardType: TextInputType.visiblePassword,
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(ViewportSize.width * 0.025),
+            ),
+            hintText: hintText,
+            hintStyle: TextStyle(
+              color: const Color(0xFFFFFFFF),
+            ),
+            fillColor: const Color(0x33000000),
+            filled: true,
+          ),
+        ),
+      ),
+    );
+  }
 
 
 }

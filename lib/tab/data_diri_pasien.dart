@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:oalarm/lanjut_sebagai.dart';
+import 'package:oalarm/login.dart';
 import 'package:oalarm/service/fetchdataPasien.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -28,6 +28,15 @@ class _DataDiriPasienState extends State<DataDiriPasien> {
   @override
   void initState() {
     getPasien();
+
+
+    var androidInitilize = new AndroidInitializationSettings('app_icon');
+    var iOSinitilize = new IOSInitializationSettings();
+    var initilizationsSettings =
+    new InitializationSettings(android: androidInitilize,iOS: iOSinitilize);
+    fltrNotification = new FlutterLocalNotificationsPlugin();
+    fltrNotification.initialize(initilizationsSettings);
+
     super.initState();
   }
 
@@ -45,6 +54,8 @@ class _DataDiriPasienState extends State<DataDiriPasien> {
         .then((value) {
       if (value!=false) {
 
+        List listJadwalMinumm = value['jadwal_minums'];
+
         setState(() {
           nama = value['nama'];
           ttl = value['tanggallahir'];
@@ -52,8 +63,8 @@ class _DataDiriPasienState extends State<DataDiriPasien> {
           alamat = value['alamat'];
           kodeDiagnosa = value['kodediagnosa'];
           kodeDx = value['kodedx'];
-          terapi = value['terapi'];
-          dosis = value['dosis'];
+          terapi = listJadwalMinumm[0]['terapi'];
+          dosis = listJadwalMinumm[0]['dosis'];
           pmo = value['pmo'];
 
 
@@ -71,76 +82,247 @@ class _DataDiriPasienState extends State<DataDiriPasien> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Data Diri Pasien'),
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-        actions: [
-          FlatButton(
-              onPressed: () async {
-                // await fltrNotification.cancelAll();
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LanjutSebagai()));
-              },
-              child: Text('Logout', style: TextStyle(color: Colors.white),))
+        backgroundColor: Color(0xff3e3a63),
+        body: isLoading? Center(
+          child: CircularProgressIndicator(),
+        ) :  Stack(
+        children: [
+          buildShape(),
+          Positioned(
+              top: 80,
+              left: 20,
+              child: Text(nama, style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.w500),)
+          ),
+          Positioned(
+              top: 110,
+              left: 20,
+              child: Text(kodeDiagnosa, style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13),)
+          ),
+          Positioned(
+              top: 40,
+              right: 10,
+              child: InkWell(
+                onTap: () async {
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                  prefs.setBool('is_pasien', false);
+                  prefs.setBool('is_admin', false);
+                  fltrNotification.cancelAll();
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LogIn()));
+                },
+                child: Container(
+                  width: 30,
+                  height: 30,
+                  child: Image.asset('assets/images/logout.png')
+                  ,
+                ),
+              )
+          ),
+          Positioned(
+              top: 94,
+              right: 45,
+              child: CircleAvatar(
+                radius: 63,
+                backgroundColor: Colors.blue[100].withOpacity(0.5),
+              )
+          ),
+          Positioned(
+              top: 100,
+              right: 50,
+              child: CircleAvatar(
+                radius: 57,
+                backgroundColor: Color(0xffe6e6e6),
+                backgroundImage: AssetImage('assets/images/hospitalisation.png')
+              )
+          ),
+
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            margin: EdgeInsets.only(top: 250),
+            child: ListView(
+              children: [
+                Card(
+                  color: Color(0xff434372),
+                  elevation: 0,
+                  child: ListTile(
+                    leading: Container(
+                      width: 50,
+                      height: 50,
+                      child: FloatingActionButton(
+                        heroTag: null,
+                        backgroundColor: Color(0xff434372),
+                        child: Image.asset('assets/images/cake.png', width: 30, height: 30,),
+                        onPressed: (){},
+                      ),
+                    ),
+                    title: Text('TTL/Umur', style: TextStyle(color: Color(0xffaeabd6))),
+                    subtitle: Text(ttl+'/'+umur, style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+                Card(
+                  color: Color(0xff434372),
+                  elevation: 0,
+                  child: ListTile(
+                    leading: Container(
+                      width: 50,
+                      height: 50,
+                      child: FloatingActionButton(
+                        heroTag: null,
+                        backgroundColor: Color(0xff434372),
+                        child: Image.asset('assets/images/homes.png', width: 30, height: 30,),
+                        onPressed: (){},
+                      ),
+                    ),
+                    title: Text('Alamat', style: TextStyle(color: Color(0xffaeabd6))),
+                    subtitle: Text(alamat, style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+                Card(
+                  color: Color(0xff434372),
+                  elevation: 0,
+                  child: ListTile(
+                    leading: Container(
+                      width: 50,
+                      height: 50,
+                      child: FloatingActionButton(
+                        heroTag: null,
+                        backgroundColor: Color(0xff434372),
+                        child: Image.asset('assets/images/writing.png', width: 30, height: 30,),
+                        onPressed: (){},
+                      ),
+                    ),
+                    title: Text('Kode Diagnosa', style: TextStyle(color: Color(0xffaeabd6))),
+                    subtitle: Text(kodeDiagnosa, style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+                Card(
+                  color: Color(0xff434372),
+                  elevation: 0,
+                  child: ListTile(
+                    leading: Container(
+                      width: 50,
+                      height: 50,
+                      child: FloatingActionButton(
+                        heroTag: null,
+                        backgroundColor: Color(0xff434372),
+                        child:Image.asset('assets/images/verify.png', width: 30, height: 30,),
+                        onPressed: (){},
+                      ),
+                    ),
+                    title: Text('Kode Dx. Kep', style: TextStyle(color: Color(0xffaeabd6))),
+                    subtitle: Text(kodeDx, style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+                Card(
+                  color: Color(0xff434372),
+                  elevation: 0,
+                  child: ListTile(
+                    leading: Container(
+                      width: 50,
+                      height: 50,
+                      child: FloatingActionButton(
+                        heroTag: null,
+                        backgroundColor: Color(0xff434372),
+                        child: Image.asset('assets/images/hydrotherapy.png', width: 30, height: 30,),
+                        onPressed: (){},
+                      ),
+                    ),
+                    title: Text('Terapi', style: TextStyle(color: Color(0xffaeabd6))),
+                    subtitle: Text(terapi, style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+                Card(
+                  color: Color(0xff434372),
+                  elevation: 0,
+                  child: ListTile(
+                    leading: Container(
+                      width: 50,
+                      height: 50,
+                      child: FloatingActionButton(
+                        heroTag: null,
+                        backgroundColor: Color(0xff434372),
+                        child: Image.asset('assets/images/dose.png', width: 30, height: 30,),
+                        onPressed: (){},
+                      ),
+                    ),
+                    title: Text('Dosis', style: TextStyle(color: Color(0xffaeabd6))),
+                    subtitle: Text(dosis, style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+                Card(
+                  color: Color(0xff434372),
+                  elevation: 0,
+                  child: ListTile(
+                    leading: Container(
+                      width: 50,
+                      height: 50,
+                      child: FloatingActionButton(
+                        heroTag: null,
+                        backgroundColor: Color(0xff434372),
+                        child: Image.asset('assets/images/nurse.png', width: 30, height: 30,),
+                        onPressed: (){},
+                      ),
+                    ),
+                    title: Text('Pmo', style: TextStyle(color: Color(0xffaeabd6))),
+                    subtitle: Text(pmo, style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
-      ),
-      body: isLoading? Center(
-        child: CircularProgressIndicator(),
-      ) : Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: ListView(
-          children: [
-            Card(
-              child: ListTile(
-                title: Text('Nama'),
-                subtitle: Text(nama),
-              ),
-            ),
-            Card(
-              child: ListTile(
-                title: Text('TTL/Umur'),
-                subtitle: Text(ttl+'/'+umur),
-              ),
-            ),
-            Card(
-              child: ListTile(
-                title: Text('Alamat'),
-                subtitle: Text(alamat),
-              ),
-            ),
-            Card(
-              child: ListTile(
-                title: Text('Kode diagnosa (ICD X)'),
-                subtitle: Text(kodeDiagnosa),
-              ),
-            ),
-            Card(
-              child: ListTile(
-                title: Text('Kode Dx. Kep 00118'),
-                subtitle: Text(kodeDx),
-              ),
-            ),
-            Card(
-              child: ListTile(
-                title: Text('Terapi'),
-                subtitle: Text(terapi),
-              ),
-            ),
-            Card(
-              child: ListTile(
-                title: Text('Dosis'),
-                subtitle: Text(dosis),
-              ),
-            ),
-            Card(
-              child: ListTile(
-                title: Text('PMO'),
-                subtitle: Text(pmo),
-              ),
-            ),
-          ],
+      )
+    );
+  }
+
+  static Widget buildShape(){
+    return ClipPath(
+      clipper: CustomShapeClass(),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+              colors: [Color(0xff3587fc), Color(0xff10c8ff)],
+              begin: const FractionalOffset(0.0, 0.0),
+              end: const FractionalOffset(0.5, 0.0),
+              stops: [0.0, 1.0],
+              tileMode: TileMode.clamp
+          ),
         ),
       ),
     );
   }
+
 }
+
+
+
+class CustomShapeClass extends CustomClipper<Path> {
+  @override
+  getClip(Size size) {
+    // TODO: implement getClip
+    var path = new Path();
+    path.lineTo(0, size.height / 4.5);
+    var firstControlPoint = new Offset(size.width / 4.5, size.height / 2.4);
+    var firstEndPoint = new Offset(size.width / 2.5, size.height / 2.3 - 60);
+    var secondControlPoint =
+    new Offset(size.width - (size.width / 3), size.height / 2.9 - 65);
+    var secondEndPoint = new Offset(size.width, size.height / 5 - 40);
+
+    path.quadraticBezierTo(firstControlPoint.dx, firstControlPoint.dy,
+        firstEndPoint.dx, firstEndPoint.dy);
+    path.quadraticBezierTo(secondControlPoint.dx, secondControlPoint.dy,
+        secondEndPoint.dx, secondEndPoint.dy);
+
+    path.lineTo(size.width, size.height / 3);
+    path.lineTo(size.width, 0);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper oldClipper)
+  {
+    return true;
+  }
+}
+
+
