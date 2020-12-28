@@ -1,7 +1,6 @@
 import 'package:day_night_time_picker/day_night_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:oalarm/admin/detail_list_pasien.dart';
@@ -95,7 +94,6 @@ class _UpdateJadwalMinumState extends State<UpdateJadwalMinum> {
         setState(() {
           isLoading = false;
         });
-        showToast('Berhasil Mengupdate data');
       } else {
         setState(() {
           isLoading = false;

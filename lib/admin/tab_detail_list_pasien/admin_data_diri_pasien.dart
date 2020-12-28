@@ -1,12 +1,9 @@
-import 'package:dropdownfield/dropdownfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:oalarm/admin/detail_list_pasien.dart';
-import 'package:oalarm/login.dart';
 import 'package:oalarm/service/fetchdataPasien.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminDataDiriPasien extends StatefulWidget {
   final String norekammedik;
@@ -28,62 +25,61 @@ class _AdminDataDiriPasienState extends State<AdminDataDiriPasien> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = new  GlobalKey<ScaffoldState>();
 
-  PersistentBottomSheetController _controller;
-
   double sliderValue = 0;
 
   bool isLoading = false;
   bool isLoadingScreen = false;
 
   List<String> listKodeDiagnosa = [
-    'F00-F19',
-    'F10-f19',
-    'F20-F29',
-    'F30-F39',
-    'F40-F48',
-    'F40-F48',
-    'F50-F59',
-    'F70-F79',
-    'F80-F89',
-    'F90-F98'
+    'F00-F19 :Gangguan mental organik dan simtomatik',
+    'F10-f19 : Gangguan mental termasuk perilaku akibat penggunaan zat psikoaktif',
+    'F20-F29 : Skizofrenia, gangguan waham dan gangguan skizotipal ',
+    'F30-F39: Gangguan perasaan (mood/ afektif)',
+    'F40-F48:Gangguan somatoform, gangguan neurotik dan gangguan terkait stres ',
+    'F50-F59:Sindrom perilaku yang berhubungan dengan faktor fisik dan gangguan fisik',
+    'F60-F69:Gangguan perilaku masa dewasa dan gangguan kepribadian',
+    'F70-F79: Retardasi mental',
+    'F80-F89: Gangguan  psikologis',
+    'F90-F98: Gangguan emosional  dan perilaku biasanya pada anak dan remaja '
   ];
   String kodeDiagnosa;
 
   List<String> listKodeDx = [
-    '00132 (Nyeri akut)',
-    '00155 (Risiko jatuh)',
-    '00007 (Hipertermia)',
-    '00027 (Defisit volume cairan)',
-    '00002 (Ketidakseimbangan nutrisi kurang dari kebutuhan tubuh)',
-    '00031 (Ketidakefektifan bersihan jalan nafas)',
-    '00032 (Ketidakefektifan pola nafas)',
-    '00201 (Resikko ketidakefektifan perfusi jaringan serebral)',
-    '00094 (Intoleransi aktifitas)',
-    '00085 (Hambatan mobilitas fisik)',
-    '00146 (Ansietas)',
-    '00118 (Gangguan citra tubuh)',
-    '00120 (Harga diri rendah situasional)',
-    '00125 (Ketidakberdayaan)',
-    '00124 (Keputusasaan)',
-    '00069 (Ketidakefektifan koping individu)',
-    '00136 (Dukacita)',
-    '00078 (Ketidakefektifan manajemen kesehatan)',
-    '00055 (Ketidakefektifan performa peran)',
-    '00066 (Distres spiritual)',
-    '00140 (Risiko perilaku kekerasan terhadap Diri sendiri )',
-    '00138  (Risiko perilaku kekerasan terhadap orang lain)',
-    'Halusinasi (Belum ada)',
-    'Waham (Belum ada)',
-    '00119 (Harga diri rendah kronik)',
-    '00053 (Isolasi social)',
-    '00182 ( Kesiapan meningkatkan perawatan diri)',
-    '00108 (Defisit perawatan diri : Mandi)',
-    '00109 (Defisit perawatan diri : Berpakaian)',
-    '00102 (Defisit perawatan diri : Makan)',
-    '00110 (Defisit perawatan diri :Eliminasi)',
-    '00051 (Hambatan komunikasi verbal)',
-    '00099 (Ketidakefektifan pemeliharaan kesehatan)',
-    '00150 (Risiko bunuh diri)'
+
+    '00132 : Nyeri akut',
+    '00155 : Risiko jatuh',
+    '00007 : Hipertermia',
+    '00027 : Defisit volume cairan',
+    '00002 : Ketidakseimbangan nutrisi kurang dari kebutuhan tubuh',
+    '00031 : Ketidakefektifan bersihan jalan nafas',
+    '00032 : Ketidakefektifan pola nafas',
+    '00201 : Resikko ketidakefektifan perfusi jaringan serebral',
+    '00094 : Intoleransi aktifitas',
+    '00085 : Hambatan mobilitas fisik',
+    '00146 : Ansietas',
+    '00118 : Gangguan citra tubuh',
+    '00120 : Harga diri rendah situasional',
+    '00125 : Ketidakberdayaan',
+    '00124 : Keputusasaan',
+    '00069 : Ketidakefektifan koping individu',
+    '00136 : Dukacita',
+    '00078 : Ketidakefektifan manajemen kesehatan',
+    '00055 : Ketidakefektifan performa peran',
+    '00066 : Distres spiritual',
+    '00140 : Risiko perilaku kekerasan terhadap Diri sendiri ',
+    '00138 : Risiko perilaku kekerasan terhadap orang lain',
+    'Halusinasi',
+    'Waham',
+    '00119 : Harga diri rendah kronik',
+    '00053 : Isolasi social',
+    '00182 : Kesiapan meningkatkan perawatan diri',
+    '00108 : Defisit perawatan diri : Mandi',
+    '00109 : Defisit perawatan diri : Berpakaian',
+    '00102 : Defisit perawatan diri : Makan',
+    '00110 : Defisit perawatan diri :Eliminasi',
+    '00051 : Hambatan komunikasi verbal',
+    '00099 : Ketidakefektifan pemeliharaan kesehatan',
+    '00150 : Risiko bunuh diri'
   ];
   String kodeDx;
 
@@ -164,7 +160,7 @@ class _AdminDataDiriPasienState extends State<AdminDataDiriPasien> {
     fetchData.updateDataPasien(widget.idDataPasien, widget.norekammedik, usernameController.text, tanggallahirController.text, umur.toString().split('.').first, alamatController.text, kodeDiagnosa, kodeDx, terapiController.text, dosisController.text, pmoController.text)
         .then((value) {
       if (value!=false) {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DetailListPasien(widget.norekammedik, widget.idDataPasien, index: 0)));;
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DetailListPasien(widget.norekammedik, widget.idDataPasien, index: 0)));
         setState(() {
           isLoading = false;
         });
@@ -381,32 +377,40 @@ class _AdminDataDiriPasienState extends State<AdminDataDiriPasien> {
                                   BorderSide(color: Color(0xffb0aed9)))),
                         ),
                       ),
+                      SizedBox(height: 30),
                       Container(
                         height: 70,
                         decoration: BoxDecoration(
                           border: Border(bottom: BorderSide(color: Color(0xffb0aed9)))
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Kode Diagnosa', style: TextStyle(
-                          fontSize: 13, color: Color(0xffb0aed9),)),
-                            new DropdownButton<String>(
-                              dropdownColor: Color(0xffb0aed9),
-                              icon: Icon(Icons.arrow_drop_down, color: Color(0xffb0aed9),),
-                              hint: Text('$kodeDiagnosa', style: TextStyle(color: Colors.white, fontSize: 13)),
-                              items: listKodeDiagnosa.map((value) {
-                                return new DropdownMenuItem<String>(
-                                  value: value,
-                                  child: new Text(value, style: TextStyle(color: Color(0xff3e3a63)),),
-                                );
-                              }).toList(),
-                              onChanged: (value) {
-                                setState(() {
-                                  print(value);
-                                  kodeDiagnosa = value;
-                                });
-                              },
+                            Padding(
+                              padding:  EdgeInsets.only(left: 6),
+                              child: Text('Kode Diagnosa', style: TextStyle(
+                          fontSize: 10, color: Color(0xffb0aed9),)),
+                            ),
+                            Padding(
+                              padding:  EdgeInsets.only(left: 6),
+                              child: new DropdownButton<String>(
+                                isExpanded: true,
+                                dropdownColor: Color(0xffb0aed9),
+                                icon: Icon(Icons.arrow_drop_down, color: Color(0xffb0aed9),),
+                                hint: Text('$kodeDiagnosa', style: TextStyle(color: Colors.white, fontSize: 13)),
+                                items: listKodeDiagnosa.map((value) {
+                                  return new DropdownMenuItem<String>(
+                                    value: value,
+                                    child: new Text(value, style: TextStyle(color: Color(0xff3e3a63)),),
+                                  );
+                                }).toList(),
+                                onChanged: (value) {
+                                  setState(() {
+                                    print(value);
+                                    kodeDiagnosa = value;
+                                  });
+                                },
+                              ),
                             )
                           ],
                         ),
@@ -419,20 +423,21 @@ class _AdminDataDiriPasienState extends State<AdminDataDiriPasien> {
                         decoration: BoxDecoration(
                             border: Border(bottom: BorderSide(color: Color(0xffb0aed9)))
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Kode Dx. Kep', style: TextStyle(
-                              fontSize: 13, color: Color(0xffb0aed9),)),
-                            SizedBox(width: 10,),
-                            Expanded(
+                            Padding(
+                              padding:  EdgeInsets.only(left: 6),
+                              child: Text('Kode Dx. Kep', style: TextStyle(
+                                fontSize: 13, color: Color(0xffb0aed9),)),
+                            ),
+                            Padding(
+                              padding:  EdgeInsets.only(left: 6),
                               child: new DropdownButton<String>(
                                 isExpanded: true,
                                 dropdownColor: Color(0xffb0aed9),
                                 icon: Icon(Icons.arrow_drop_down, color: Color(0xffb0aed9),),
-                                hint: FittedBox(
-                                    fit: BoxFit.contain,
-                                    child: Text('$kodeDx', style: TextStyle(color: Colors.white, fontSize: 13))),
+                                hint: Text('$kodeDx', style: TextStyle(color: Colors.white, fontSize: 13)),
                                 items: listKodeDx.map((value) {
                                   return new DropdownMenuItem<String>(
                                     value: value,

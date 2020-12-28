@@ -1,9 +1,5 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:oalarm/homepage.dart';
-import 'package:oalarm/service/fetchJadwalMinum.dart';
 import 'package:oalarm/service/fetchdataPasien.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -90,13 +86,13 @@ class _JadwalMinumState extends State<JadwalMinum> {
 
 
   Future notificationSelected(String payload) async {
-    if (payload != null) {
-      debugPrint('notification payload: $payload');
-    }
-    await Navigator.pushReplacement(
-      context,
-      MaterialPageRoute<void>(builder: (context) => HomePage()),
-    );
+    // if (payload != null) {
+    //   debugPrint('notification payload: $payload');
+    // }
+    // await Navigator.pushReplacement(
+    //   context,
+    //   MaterialPageRoute<void>(builder: (context) => HomePage()),
+    // );
   }
 
   Future _showNotification(String deskripsi, int jam, int menit, int indexObat, int indexWaktu) async {

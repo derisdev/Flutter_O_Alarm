@@ -12,9 +12,6 @@ class ListPasien extends StatefulWidget {
   _ListPasienState createState() => _ListPasienState();
 }
 
-enum MENU {HAPUS }
-
-
 class _ListPasienState extends State<ListPasien> {
 
   var scaffoldKey = GlobalKey<ScaffoldState>();
@@ -69,6 +66,7 @@ class _ListPasienState extends State<ListPasien> {
     FetchDataPasien fetchDataPasien = FetchDataPasien();
     fetchDataPasien.deleteDataPasien(id.toString()).then((value){
       if(value!=false){
+
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ListPasien()));
         setState(() {
           isLoading = false;
@@ -164,7 +162,12 @@ class _ListPasienState extends State<ListPasien> {
                             child: ListView.builder(
                                 itemCount: listDataPasien.length,
                                 itemBuilder: (context, index) {
-                                  return InkWell(
+                                  return Container(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 20),
+                                    margin: EdgeInsets.only(
+                                        top: index == 0 ? 6 : 0),
+                                    child: InkWell(
                                       onTap: () {
                                         Navigator.push(
                                             context,
@@ -172,18 +175,25 @@ class _ListPasienState extends State<ListPasien> {
                                                 builder: (context) =>
                                                     DetailListPasien(
                                                         listDataPasien[index]
-                                                            ['norekammedik'],
+                                                        ['norekammedik'],
                                                         listDataPasien[index]
-                                                            ['id'])));
+                                                        ['id'])));
                                       },
-                                      onLongPress: (){
-                                        confirm(context, listDataPasien[index]);
-                                      },
-                                      child: Container(
-                                        padding:
-                                            EdgeInsets.symmetric(horizontal: 20),
-                                        margin: EdgeInsets.only(
-                                            top: index == 0 ? 6 : 0),
+                                      child: Dismissible(
+                                        key: Key('item ${listDataPasien[index]}'),
+                                        direction: DismissDirection.endToStart,
+                                        confirmDismiss: (direction){
+                                          confirm(context, listDataPasien[index]);
+                                          return Future.value(false);
+                                        },
+                                        background: Container(
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(15),
+                                            child: ListTile(
+                                              trailing: Icon(Icons.delete_forever, color: Colors.lightBlueAccent),
+                                            )
+                                          ),
+                                        ),
                                         child: Card(
                                             color: Color(0xff434372),
                                             shape: RoundedRectangleBorder(
@@ -211,13 +221,15 @@ class _ListPasienState extends State<ListPasien> {
                                               ),
                                               subtitle: Text(
                                                 listDataPasien[index]
-                                                    ['kodediagnosa'],
+                                                    ['norekammedik'],
                                                 style: TextStyle(
                                                     color: Color(0xffadaad6)),
                                               ),
                                               trailing: Icon(Icons.chevron_right, color: Color(0xffadaad6)),
                                             )),
-                                      ));
+                                      ),
+                                    ),
+                                  );
                                 }),
                           ),
               ),
@@ -278,27 +290,24 @@ class _ListPasienState extends State<ListPasien> {
     switch (await showDialog(
         context: context,
         builder: (BuildContext context) {
-          return SimpleDialog(
-            children: <Widget>[
-              SimpleDialogOption(
+          return AlertDialog(
+            title: const Text("Konformasi Hapus"),
+            content: const Text("Yakin ingin menghapus?"),
+            actions: <Widget>[
+              FlatButton(
                   onPressed: () {
-                    Navigator.pop(context, MENU.HAPUS);
+                    deletePasien(jadwalMinum['id']);
+                    Navigator.of(context).pop(true);
                   },
-                  child: ListTile(
-                    leading: Icon(
-                      Icons.delete,
-                      color: Colors.lightBlueAccent,
-                    ),
-                    title:
-                    Text('HAPUS', textAlign: TextAlign.center),
-                  )),
-
+                  child: const Text("Hapus")
+              ),
+              FlatButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text("Batal"),
+              ),
             ],
           );
         })) {
-      case MENU.HAPUS:
-        deletePasien(jadwalMinum['id']);
-        break;
     }
   }
 

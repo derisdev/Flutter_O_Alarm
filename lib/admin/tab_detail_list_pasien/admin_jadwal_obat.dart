@@ -19,6 +19,8 @@ class _AdminJadwalObatState extends State<AdminJadwalObat> {
 
   bool isLoading = false;
 
+  int index = 0;
+
   @override
   void initState() {
     super.initState();
@@ -44,6 +46,7 @@ class _AdminJadwalObatState extends State<AdminJadwalObat> {
           row.add(jadwalObat[index]['tanggalkembali']);
           row.add(jadwalObat[index]['keluhan']);
           row.add('iconEdit ,'+index.toString());
+          row.add(index);
           data.add(row);
         }
         setState(() {
@@ -198,20 +201,22 @@ class _AdminJadwalObatState extends State<AdminJadwalObat> {
                                 },
                                 border: TableBorder(bottom: BorderSide(color: Color(0xff434372), width: 1)),
                                 children: data.map((item) {
+                                  index +=1;
                                   return TableRow(
                                       children: item.map((row) {
                                         return Container(
+                                          color: Color(0xff3e3a63),
                                           child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
+                                            padding: const EdgeInsets.all(10),
                                             child: row.toString().contains('iconEdit')?
                                             InkWell(
-                                                child: Icon(Icons.edit, size: 15, color: Colors.lightBlueAccent,),
+                                                child: Icon(Icons.edit, size: 15, color: Colors.lightBlueAccent),
                                                 onTap: (){
                                                   Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateJadwalObat(listJadwalObat: listJadwalObat[int.parse(row.toString().split(',').last)], idDataPasien: widget.idDataPasien, norekammedik: widget.norekammedik,)));
                                                 })
                                                 : Text(
                                               row.toString(),
-                                              style: TextStyle(fontSize: 15.0, color: Colors.white),
+                                              style: TextStyle(fontSize: 13.0, color: Colors.white),
                                               textAlign: TextAlign.center,
                                             ),
                                           ),

@@ -82,7 +82,7 @@ class _ToggleButtonState extends State<ToggleButton> {
     );
   }
 
-  Text buildText({String text, Color color = const Color(0xFF000000)}) {
+  Text buildText({String text, Color color = const Color(0xff3e3a63)}) {
     return Text(
       text,
       style: TextStyle(

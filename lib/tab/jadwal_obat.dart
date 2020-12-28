@@ -13,6 +13,8 @@ class _JadwalObatState extends State<JadwalObat> {
 
   bool isLoading = false;
 
+  int index=0;
+
   @override
   void initState() {
     getPasien();
@@ -165,14 +167,16 @@ class _JadwalObatState extends State<JadwalObat> {
                             },
                             border: TableBorder(bottom: BorderSide(color: Color(0xff434372), width: 1)),
                             children: data.map((item) {
+                              index +=1;
                               return TableRow(
                                   children: item.map((row) {
                                     return Container(
+                                      color: Color(0xff3e3a63),
                                       child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
+                                        padding: const EdgeInsets.all(10.0),
                                         child: Text(
                                           row.toString(),
-                                          style: TextStyle(fontSize: 15.0,color: Colors.white),
+                                          style: TextStyle(fontSize: 13.0,color: Colors.white),
                                           textAlign: TextAlign.center,
                                         ),
                                       ),

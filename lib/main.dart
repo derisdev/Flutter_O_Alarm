@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:oalarm/splash_screen.dart';
-import 'package:oalarm/welcome_screen.dart';
 
 void main() {
   runApp(MyApp());

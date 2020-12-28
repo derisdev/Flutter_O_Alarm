@@ -4,7 +4,6 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:oalarm/admin/detail_list_pasien.dart';
-import 'package:oalarm/admin/tambah_jadwal_minum.dart';
 import 'package:oalarm/service/fetchJadwalObat.dart';
 
 class UpdateJadwalObat extends StatefulWidget {
@@ -55,7 +54,6 @@ class _UpdateJadwalObatObatState extends State<UpdateJadwalObat> {
     fetchData.updateJadwalObat(widget.listJadwalObat['id'], tanggalAmbilController.text, tanggalKembaliController.text, keluhanController.text, widget.idDataPasien.toString())
         .then((value) {
       if (value!=false) {
-        showToast('Berhasil mengupdate data');
         Navigator.pop(context);
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DetailListPasien(widget.norekammedik, widget.idDataPasien, index: 1,)));
         setState(() {
@@ -78,7 +76,6 @@ class _UpdateJadwalObatObatState extends State<UpdateJadwalObat> {
     fetchData.deletejadwalObat(widget.listJadwalObat['id'])
         .then((value) {
       if (value!=false) {
-        showToast('Berhasil Menghapus data');
         Navigator.pop(context);
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => DetailListPasien(widget.norekammedik, widget.idDataPasien, index: 1,)));
         setState(() {
@@ -188,7 +185,7 @@ class _UpdateJadwalObatObatState extends State<UpdateJadwalObat> {
                       size: 30,
                       color: Colors.white
                   ) : InkWell(
-                    child: Icon(Icons.delete, color: Color(0xff3e3a63),),
+                    child: Icon(Icons.delete_forever, color: Colors.white,),
                     onTap: (){
                       deleteJadwalObat();
                     },

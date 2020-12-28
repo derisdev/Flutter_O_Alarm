@@ -16,8 +16,6 @@ class AdminJadwalMinum extends StatefulWidget {
   _AdminJadwalMinumState createState() => _AdminJadwalMinumState();
 }
 
-enum MENU {UBAH, HAPUS }
-
 class _AdminJadwalMinumState extends State<AdminJadwalMinum> {
 
   List listJadwalMinum = [];
@@ -65,7 +63,6 @@ class _AdminJadwalMinumState extends State<AdminJadwalMinum> {
         setState(() {
           isLoading = false;
         });
-        showToast('Berhasil Menghapus data');
 
       } else {
         setState(() {
@@ -144,15 +141,39 @@ class _AdminJadwalMinumState extends State<AdminJadwalMinum> {
             ) : ListView.builder(
                 itemCount: listJadwalMinum.length,
                 itemBuilder: (context, index){
-                  return InkWell(
+                  return Container(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: InkWell(
                       onTap: (){
                         Navigator.push(context, MaterialPageRoute(builder: (context)=> DetailAdminJadwalMinum(listJadwalMinum[index])));
                       },
-                      onLongPress: (){
-                        confirm(context, listJadwalMinum[index]);
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: Dismissible(
+                        key: Key('item ${listJadwalMinum[index]}'),
+                        confirmDismiss: (direction){
+                          if(direction ==  DismissDirection.startToEnd){
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateJadwalMinum(dataJadwalMinum: listJadwalMinum[index], idDataPasien: widget.idDataPasien, noRekamMedik: widget.norekamMedik,)));
+                          }
+                          else {
+                            confirm(context, listJadwalMinum[index]);
+                          }
+                          return Future.value(false);
+                        },
+                        background: Container(
+                          child: Padding(
+                              padding: const EdgeInsets.all(15),
+                              child: ListTile(
+                                leading: Icon(Icons.edit, color: Colors.lightBlueAccent),
+                              )
+                          ),
+                        ),
+                        secondaryBackground: Container(
+                          child: Padding(
+                              padding: const EdgeInsets.all(15),
+                              child: ListTile(
+                                trailing: Icon(Icons.delete_forever, color: Colors.lightBlueAccent),
+                              )
+                          ),
+                        ),
                         child: Card(
                             color: Color(0xff434372),
                             shape: RoundedRectangleBorder(
@@ -176,7 +197,8 @@ class _AdminJadwalMinumState extends State<AdminJadwalMinum> {
                               trailing: Icon(Icons.chevron_right, color: Color(0xffadaad6)),
                             )
                         ),
-                      )
+                      ),
+                    ),
                   );
                 }),
           ),
@@ -190,45 +212,25 @@ class _AdminJadwalMinumState extends State<AdminJadwalMinum> {
     switch (await showDialog(
         context: context,
         builder: (BuildContext context) {
-          return SimpleDialog(
-            children: <Widget>[
-              SimpleDialogOption(
+          return AlertDialog(
+            title: const Text("Konformasi Hapus"),
+            content: const Text("Yakin ingin menghapus?"),
+            actions: <Widget>[
+              FlatButton(
                   onPressed: () {
-                    Navigator.pop(context, MENU.UBAH);
+                    deleteJadwalMinum(jadwalMinum['id']);
+                    Navigator.of(context).pop(true);
                   },
-                  child: ListTile(
-                    leading: Icon(
-                      Icons.edit,
-                      color: Colors.lightBlueAccent,
-                    ),
-                    title:
-                    Text('UBAH', textAlign: TextAlign.center),
-                  )),
-              Divider(
-                color: Colors.grey,
+                  child: const Text("Hapus")
               ),
-              SimpleDialogOption(
-                  onPressed: () {
-                    Navigator.pop(context, MENU.HAPUS);
-                  },
-                  child: ListTile(
-                    leading: Icon(
-                      Icons.delete,
-                      color: Colors.lightBlueAccent,
-                    ),
-                    title:
-                    Text('HAPUS', textAlign: TextAlign.center),
-                  )),
-
+              FlatButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text("Batal"),
+              ),
             ],
           );
         })) {
-      case MENU.UBAH:
-        Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateJadwalMinum(dataJadwalMinum: jadwalMinum, idDataPasien: widget.idDataPasien, noRekamMedik: widget.norekamMedik,)));
-        break;
-      case MENU.HAPUS:
-        deleteJadwalMinum(jadwalMinum['id']);
-        break;
     }
   }
+
 }

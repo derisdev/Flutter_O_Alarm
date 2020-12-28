@@ -5,7 +5,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:oalarm/admin/detail_list_pasien.dart';
 import 'package:oalarm/admin/list_tambah_jadwal_minum.dart';
 import 'package:oalarm/service/fetchJadwalObat.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class TambahJadwalObat extends StatefulWidget {
   final bool isfromTambahPasien;
@@ -96,8 +95,6 @@ class _TambahJadwalObatState extends State<TambahJadwalObat> {
             color: keluhanController.text.isNotEmpty? Colors.lightBlueAccent: Colors.lightBlueAccent.withOpacity(0.5),
             onPressed: isLoading? (){} : () async{
               if (keluhanController.text.isNotEmpty) {
-
-                SharedPreferences prefs = await SharedPreferences.getInstance();
 
                 Map dataJadwalObat = {
                   'tanggalambil': tanggalAmbilController.text,

@@ -2,13 +2,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class FetchJadwalObat {
 
 
   Future storeJadwalObat(Map dataJadwalObat) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
 
     String baseUrl =
         "http://oalarm.fillocoffee.web.id/api/v1/jadwalobat";
@@ -35,8 +33,7 @@ class FetchJadwalObat {
   }
 
 
-  Future updateJadwalObat(int id, String tanggalAmbil, String tanggalKembali, String keluhan, String data_pasien_id) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+  Future updateJadwalObat(int id, String tanggalAmbil, String tanggalKembali, String keluhan, String dataPasienId) async {
 
     String baseUrl =
         "http://oalarm.fillocoffee.web.id/api/v1/jadwalobat/$id";
@@ -46,7 +43,7 @@ class FetchJadwalObat {
           'tanggalambil': tanggalAmbil,
           'tanggalkembali': tanggalKembali,
           'keluhan': keluhan,
-          'data_pasien_id': data_pasien_id,
+          'data_pasien_id': dataPasienId,
           '_method' : 'PATCH'
         });
 

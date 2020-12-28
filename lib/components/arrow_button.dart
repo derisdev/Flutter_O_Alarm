@@ -1,4 +1,3 @@
-import 'package:oalarm/utils/custom_icons_icons.dart';
 import 'package:oalarm/utils/viewport_size.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +32,7 @@ class ArrowButton extends StatelessWidget {
             ),
           ],
         ),
-        child: Icon(Icons.arrow_right_alt, size: 30,),
+        child: Icon(Icons.arrow_right_alt, size: 30, color: Color(0xff3e3a63),),
       ),
     );
   }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:page_indicator/page_indicator.dart';
 import 'package:oalarm/widget/clock_alarm.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class DetailAdminJadwalMinum extends StatefulWidget {
   final dynamic jamMinum;

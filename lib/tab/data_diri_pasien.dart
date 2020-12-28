@@ -21,6 +21,8 @@ class _DataDiriPasienState extends State<DataDiriPasien> {
   String dosis;
   String pmo;
 
+  String noRekamMedik;
+
   FlutterLocalNotificationsPlugin fltrNotification;
 
 
@@ -44,7 +46,7 @@ class _DataDiriPasienState extends State<DataDiriPasien> {
   getPasien () async {
 
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String noRekamMedik = prefs.getString('norekammedik');
+    noRekamMedik = prefs.getString('norekammedik');
 
     setState(() {
       isLoading = true;
@@ -96,7 +98,7 @@ class _DataDiriPasienState extends State<DataDiriPasien> {
           Positioned(
               top: 110,
               left: 20,
-              child: Text(kodeDiagnosa, style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13),)
+              child: Text(noRekamMedik, style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13),)
           ),
           Positioned(
               top: 40,

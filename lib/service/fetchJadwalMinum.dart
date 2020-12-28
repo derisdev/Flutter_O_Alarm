@@ -2,12 +2,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class FetchJadwalMinum {
 
 
-  Future storeJadwalMinum(String terapi, String dosis, String jadwalminum, String data_pasien_id) async {
+  Future storeJadwalMinum(String terapi, String dosis, String jadwalminum, String dataPasienId) async {
 
     String baseUrl =
         "http://oalarm.fillocoffee.web.id/api/v1/jadwalminum";
@@ -17,7 +16,7 @@ class FetchJadwalMinum {
           'terapi': terapi,
           'dosis': dosis,
           'jadwalminum': jadwalminum,
-          'data_pasien_id': data_pasien_id,
+          'data_pasien_id': dataPasienId,
     });
 
     print(response.statusCode);
@@ -39,8 +38,7 @@ class FetchJadwalMinum {
   }
 
 
-  Future updateJadwalMinum(int id, String terapi, String dosis, String jadwalminum, String data_pasien_id) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+  Future updateJadwalMinum(int id, String terapi, String dosis, String jadwalminum, String dataPasienId) async {
 
     String baseUrl =
         "http://oalarm.fillocoffee.web.id/api/v1/jadwalminum/$id";
@@ -50,7 +48,7 @@ class FetchJadwalMinum {
           'terapi': terapi,
           'dosis': dosis,
           'jadwalminum': jadwalminum,
-          'data_pasien_id': data_pasien_id,
+          'data_pasien_id': dataPasienId,
           '_method' : 'PATCH'
         });
 

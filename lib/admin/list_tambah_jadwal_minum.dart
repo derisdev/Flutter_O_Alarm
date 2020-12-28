@@ -2,10 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:oalarm/admin/detail_admin_jadwal_minum.dart';
-import 'package:oalarm/admin/detail_list_pasien.dart';
 import 'package:oalarm/admin/tab_admin/list_pasien.dart';
 import 'package:oalarm/admin/tambah_jadwal_minum.dart';
-import 'package:oalarm/admin/update_jadwal_minum.dart';
 import 'package:oalarm/service/fetchJadwalMinum.dart';
 import 'package:oalarm/service/fetchJadwalObat.dart';
 import 'package:oalarm/service/fetchdataPasien.dart';
@@ -185,15 +183,27 @@ class _ListTambahJadwalMinumState extends State<ListTambahJadwalMinum> {
               ) : ListView.builder(
                   itemCount: listJadwalMinum.length,
                   itemBuilder: (context, index){
-                    return InkWell(
+                    return Container(
+                      padding: EdgeInsets.symmetric(horizontal: 20),
+                      child: InkWell(
                         onTap: (){
                           Navigator.push(context, MaterialPageRoute(builder: (context)=> DetailAdminJadwalMinum(listJadwalMinum[index])));
                         },
-                        onLongPress: (){
-                          confirm(context, listJadwalMinum[index], index);
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: Dismissible(
+                          key: Key('item ${listJadwalMinum[index]}'),
+                          direction: DismissDirection.endToStart,
+                          confirmDismiss: (direction){
+                            deleteJadwalMinum(index);
+                            return Future.value(false);
+                          },
+                          background: Container(
+                            child: Padding(
+                                padding: const EdgeInsets.all(15),
+                                child: ListTile(
+                                  trailing: Icon(Icons.delete_forever, color: Colors.lightBlueAccent),
+                                )
+                            ),
+                          ),
                           child: Card(
                               color: Color(0xff434372),
                               shape: RoundedRectangleBorder(
@@ -217,58 +227,13 @@ class _ListTambahJadwalMinumState extends State<ListTambahJadwalMinum> {
                                 trailing: Icon(Icons.chevron_right, color: Color(0xffadaad6)),
                               )
                           ),
-                        )
+                        ),
+                      ),
                     );
                   }),
             ),
           ],
         )
     );
-  }
-
-  Future<Null> confirm(BuildContext context, dynamic jadwalMinum, int index) async {
-    switch (await showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return SimpleDialog(
-            children: <Widget>[
-              // SimpleDialogOption(
-              //     onPressed: () {
-              //       Navigator.pop(context, MENU.UBAH);
-              //     },
-              //     child: ListTile(
-              //       leading: Icon(
-              //         Icons.edit,
-              //         color: Colors.blue,
-              //       ),
-              //       title:
-              //       Text('UBAH', textAlign: TextAlign.center),
-              //     )),
-              // Divider(
-              //   color: Colors.grey,
-              // ),
-              SimpleDialogOption(
-                  onPressed: () {
-                    Navigator.pop(context, MENU.HAPUS);
-                  },
-                  child: ListTile(
-                    leading: Icon(
-                      Icons.delete,
-                      color: Colors.blue,
-                    ),
-                    title:
-                    Text('HAPUS', textAlign: TextAlign.center),
-                  )),
-
-            ],
-          );
-        })) {
-      // case MENU.UBAH:
-      //   // Navigator.push(context, MaterialPageRoute(builder: (context) => UpdateJadwalMinum(dataJadwalMinum: jadwalMinum, idDataPasien: widget.idDataPasien, noRekamMedik: widget.norekamMedik,)));
-      //   break;
-      case MENU.HAPUS:
-        deleteJadwalMinum(index);
-        break;
-    }
   }
 }
