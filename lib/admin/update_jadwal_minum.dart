@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:fraction/fraction.dart';
 import 'package:oalarm/admin/detail_list_pasien.dart';
 import 'package:oalarm/service/fetchJadwalMinum.dart';
 
@@ -86,7 +87,7 @@ class _UpdateJadwalMinumState extends State<UpdateJadwalMinum> {
       isLoading = true;
     });
     FetchJadwalMinum fetchData = FetchJadwalMinum();
-    fetchData.updateJadwalMinum(widget.dataJadwalMinum['id'], terapiController.text, '$jumlahMinum x $jumlahObat $tipeObat', jamMinum, widget.idDataPasien.toString())
+    fetchData.updateJadwalMinum(widget.dataJadwalMinum['id'], terapiController.text, '$jumlahMinum x ${Fraction.fromDouble(jumlahObat)} $tipeObat', jamMinum, widget.idDataPasien.toString())
         .then((value) {
       if (value!=false) {
         Navigator.pop(context);
