@@ -44,6 +44,8 @@ dependencies:
   flutter_countdown_timer: ^1.6.0
   flutter_dropdown: ^0.0.8
   fraction: ^1.2.1
+  csv: ^4.1.0
+  path_provider: ^1.6.24
 
 
 dev_dependencies:

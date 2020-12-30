@@ -1,8 +1,13 @@
+import 'dart:io';
+
+import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:oalarm/admin/detail_list_pasien.dart';
 import 'package:oalarm/admin/tambah-pasien.dart';
 import 'package:oalarm/service/fetchdataPasien.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../login.dart';
@@ -23,6 +28,8 @@ class _ListPasienState extends State<ListPasien> {
 
   List listDataPasien = [];
   bool isLoading = true;
+  bool isLoadingExport = false;
+
   @override
   void initState() {
     getAllPasien();
@@ -79,6 +86,179 @@ class _ListPasienState extends State<ListPasien> {
       }
     });
   }
+
+
+  exportToExcel() async {
+
+    setState(() {
+      isLoadingExport = true;
+    });
+
+    List<List<dynamic>> listData = [];
+
+    FetchDataPasien fetchDataPasien = FetchDataPasien();
+    fetchDataPasien.getAllDataPasienWith().then((value) async {
+      if(value!=false){
+
+        List<dynamic> initHead = [];
+        initHead.add('Nomor Rekam Medik');
+        initHead.add('Nama');
+        initHead.add('Tanggal Lahir');
+        initHead.add('Umur');
+        initHead.add('Alamat');
+        initHead.add('Kode Diagnosa');
+        initHead.add('Kode Dx. Kep');
+        initHead.add('PMO');
+        initHead.add('Terapi');
+        initHead.add('Dosis');
+        initHead.add('Jadwal Minum');
+        initHead.add('Tanggal Ambil');
+        initHead.add('Tanggal Kembali');
+        initHead.add('Keluhan');
+
+
+        listData.add(initHead);
+
+        for(int i=0;i<value.length;i++){
+
+
+          List listJadwalObat = value[i]['jadwal_obats'];
+          List listJadwalMinum = value[i]['jadwal_minums'];
+
+          int lengthJadwalObat = listJadwalObat.length;
+          int lengthJadwalMinum = listJadwalMinum.length;
+
+          if(lengthJadwalObat>lengthJadwalMinum){
+
+            for(int j=0;j<value[i]['jadwal_obats'].length;j++){
+              List<dynamic> listRow = [];
+              listRow.clear();
+
+
+              if(j<1){
+                listRow.add(value[i]['norekammedik']);
+                listRow.add(value[i]['nama']);
+                listRow.add(value[i]['tanggallahir']);
+                listRow.add(value[i]['umur']);
+                listRow.add(value[i]['alamat']);
+                listRow.add(value[i]['kodediagnosa']);
+                listRow.add(value[i]['kodedx']);
+                listRow.add(value[i]['pmo']);
+              }
+              else {
+                listRow.add('');
+                listRow.add('');
+                listRow.add('');
+                listRow.add('');
+                listRow.add('');
+                listRow.add('');
+                listRow.add('');
+                listRow.add('');
+              }
+              listRow.add(listJadwalObat[j]['tanggalambil']);
+              listRow.add(listJadwalObat[j]['tanggalkembali']);
+              listRow.add(listJadwalObat[j]['keluhan']);
+
+              if(j<lengthJadwalMinum){
+                listRow.add(listJadwalMinum[j]['terapi']);
+                listRow.add(listJadwalMinum[j]['dosis']);
+                listRow.add(listJadwalMinum[j]['jadwalminum']);
+              }
+              else {
+                listRow.add('');
+                listRow.add('');
+                listRow.add('');
+
+              }
+              listData.add(listRow);
+            }
+          }
+
+          else {
+
+            for(int j=0;j<value[i]['jadwal_minums'].length;j++){
+              List<dynamic> listRow = [];
+              listRow.clear();
+
+              if(j<1){
+                listRow.add(value[i]['norekammedik']);
+                listRow.add(value[i]['nama']);
+                listRow.add(value[i]['tanggallahir']);
+                listRow.add(value[i]['umur']);
+                listRow.add(value[i]['alamat']);
+                listRow.add(value[i]['kodediagnosa']);
+                listRow.add(value[i]['kodedx']);
+                listRow.add(value[i]['pmo']);
+              }
+              else {
+                listRow.add('');
+                listRow.add('');
+                listRow.add('');
+                listRow.add('');
+                listRow.add('');
+                listRow.add('');
+                listRow.add('');
+                listRow.add('');
+              }
+
+              listRow.add(listJadwalMinum[j]['terapi']);
+              listRow.add(listJadwalMinum[j]['dosis']);
+              listRow.add(listJadwalMinum[j]['jadwalminum']);
+
+
+
+              if(j<lengthJadwalObat){
+                listRow.add(listJadwalObat[j]['tanggalambil']);
+                listRow.add(listJadwalObat[j]['tanggalkembali']);
+                listRow.add(listJadwalObat[j]['keluhan']);
+              }
+              else {
+                listRow.add('');
+                listRow.add('');
+                listRow.add('');
+
+              }
+              listData.add(listRow);
+              print(listRow);
+            }
+          }
+        }
+        print(listData);
+        String csv = const ListToCsvConverter().convert(listData);
+        final directory = await getExternalStorageDirectory();
+        final pathOfTheFileToWrite = directory.path + "/datapasien.csv";
+        File file = await File(pathOfTheFileToWrite);
+        file.writeAsString(csv).then((value){
+          print(pathOfTheFileToWrite);
+          showToast('Data berhasil di export.\n Path: $pathOfTheFileToWrite');
+        });
+        setState(() {
+          isLoadingExport = false;
+        });
+      }
+      else {
+        setState(() {
+          isLoadingExport = false;
+        });
+      }
+
+
+    });
+  }
+
+
+  showToast(String text) {
+    Fluttertoast.showToast(
+        msg:
+        text,
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM,
+        fontSize: 14.0,
+        backgroundColor: Colors.lightBlueAccent,
+        textColor: Colors.white);
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -268,6 +448,16 @@ class _ListPasienState extends State<ListPasien> {
               onTap: ()  {
 
               },
+            ),
+            RaisedButton(
+              onPressed: ()async{
+                exportToExcel();
+              },
+              color: Color(0xff10c8ff),
+              child: isLoadingExport? SpinKitThreeBounce(
+                color: Colors.white,
+                size: 30
+              ) : Text('Export ke Excel'),
             ),
             RaisedButton(
               onPressed: ()async{

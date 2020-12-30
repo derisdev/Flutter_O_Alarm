@@ -120,7 +120,34 @@ class FetchDataPasien {
     }
 
     else if (response.statusCode == 404) {
-      showToast('Nama atau password salah');
+      showToast('Data tidak ditemukan');
+      return false;
+    }
+
+    else {
+      showToast('Terjadi kesalahan');
+      return false;
+    }
+  }
+
+
+  Future getAllDataPasienWith() async {
+
+    String baseUrl =
+        "http://oalarm.fillocoffee.web.id/api/v1/datapasien/datawith/data";
+    var response = await http.get(baseUrl,
+        headers: {"Accept": "application/json"});
+
+    print(response.statusCode);
+    print(response.body);
+
+    if (response.statusCode == 200) {
+      final jsonData = json.decode(response.body);
+      return jsonData['datapasiens'];
+    }
+
+    else if (response.statusCode == 404) {
+      showToast('Data tidak ditemukan');
       return false;
     }
 

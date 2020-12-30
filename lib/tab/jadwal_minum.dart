@@ -98,6 +98,8 @@ class _JadwalMinumState extends State<JadwalMinum> {
   Future _showNotification(String deskripsi, int jam, int menit, int indexObat, int indexWaktu) async {
     var androidDetails = new AndroidNotificationDetails(
         "Channel ID", "OAlarm", "This is notif alarm",
+        playSound: true,
+        sound: RawResourceAndroidNotificationSound('alarm_clock'),
         importance: Importance.max);
     var iSODetails = new IOSNotificationDetails();
     var generalNotificationDetails =
